@@ -1,12 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { StarField } from "./StarField";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import heroImage from "@/assets/shining-stone-hero.jpg";
-import { Sparkles, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { useTranslations } from 'next-intl';
 
 export const HeroSection = () => {
+  const t = useTranslations();
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center starfield overflow-hidden">
       <StarField />
+      <LanguageSwitcher />
       
       {/* Background Image with Overlay */}
       <div 
@@ -19,41 +24,32 @@ export const HeroSection = () => {
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Magical Title */}
         <div className="mb-8 sm:mb-12 animate-fade-in">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-4 stellar-text leading-tight">
-            Shining Stone
+          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-cinzel font-bold mb-4 stellar-text leading-tight tracking-wide">
+            {t('title')}
           </h1>
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
             <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
-              Discover magical places under moonlight
+              {t('subtitle')}
             </p>
-            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
           </div>
         </div>
 
-        {/* Description */}
-        <div className="mb-8 sm:mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Find enchanted stones where couples gather under starlit skies. 
-            Connect with kindred spirits and create unforgettable moments in nature's most romantic settings.
-          </p>
-        </div>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <Button 
             size="lg" 
-            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow px-8 py-4 text-lg font-semibold animate-glow"
+            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
           >
             <MapPin className="w-5 h-5 mr-2" />
-            Enter the Magic
+            {t('enterMagic')}
           </Button>
           <Button 
             variant="outline" 
             size="lg" 
             className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
           >
-            Learn More
+            {t('learnMore')}
           </Button>
         </div>
 
