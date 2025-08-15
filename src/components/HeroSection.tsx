@@ -21,53 +21,52 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/60 to-background/90" />
       
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-between min-h-screen px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
-        {/* Title at top */}
-        <div className="pt-16 sm:pt-20 text-center animate-fade-in">
-          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold stellar-text leading-tight tracking-wider">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        {/* Magical Title */}
+        <div className="mb-8 sm:mb-12 animate-fade-in">
+          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
             {messages.title}
           </h1>
-        </div>
-
-        {/* Description and Buttons at bottom */}
-        <div className="pb-16 sm:pb-20 text-center">
-          <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
-              <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
-                {messages.subtitle}
-              </p>
-              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
-            </div>
-            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {messages.description}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
+            <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
+              {messages.subtitle}
             </p>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
-            >
-              <MapPin className="w-5 h-5 mr-2" />
-              {messages.enterMagic}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
-            >
-              {messages.learnMore}
-            </Button>
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
           </div>
         </div>
-      </div>
 
-      {/* Floating Elements */}
-      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/60 rounded-full animate-float hidden sm:block" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-secondary/80 rounded-full animate-twinkle hidden sm:block" style={{ animationDelay: '2s' }} />
-      <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" style={{ animationDelay: '1.5s' }} />
+        {/* Description */}
+        <div className="mb-8 sm:mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {messages.description}
+          </p>
+        </div>
+
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <Button 
+            size="lg" 
+            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
+          >
+            <MapPin className="w-5 h-5 mr-2" />
+            {messages.enterMagic}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
+          >
+            {messages.learnMore}
+          </Button>
+        </div>
+
+        {/* Floating Elements */}
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/60 rounded-full animate-float hidden sm:block" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-secondary/80 rounded-full animate-twinkle hidden sm:block" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" style={{ animationDelay: '1.5s' }} />
+      </div>
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
