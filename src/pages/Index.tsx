@@ -1,16 +1,10 @@
-import { NewHeroSection } from "@/components/NewHeroSection";
-import { IntlProvider } from "@/providers/IntlProvider";
-import { useLocale } from "@/hooks/useLocale";
+import { HeroSection } from "@/components/HeroSection";
 
 const Index = () => {
-  const { locale, changeLocale } = useLocale();
-
   return (
-    <IntlProvider locale={locale}>
-      <main className="relative bg-black min-h-screen">
-        <NewHeroSection locale={locale} onLocaleChange={changeLocale} />
-      </main>
-    </IntlProvider>
+    <main className="relative">
+      <HeroSection />
+    </main>
   );
 };
 
