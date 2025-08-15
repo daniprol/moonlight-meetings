@@ -2,41 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Shining Stone Design System - Cosmic Night Theme
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Cosmic Night Color Palette */
+    --background: 229 84% 5%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 229 84% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 229 84% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Magical Stone Golden Glow */
+    --primary: 45 93% 58%;
+    --primary-foreground: 229 84% 5%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Moonlight Silver */
+    --secondary: 210 40% 85%;
+    --secondary-foreground: 229 84% 5%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Starlight Purple */
+    --muted: 265 85% 15%;
+    --muted-foreground: 265 25% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Cosmic Accent */
+    --accent: 285 85% 25%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 229 30% 20%;
+    --input: 229 30% 20%;
+    --ring: 45 93% 58%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
+
+    /* Custom Cosmic Gradients */
+    --gradient-cosmic: linear-gradient(135deg, hsl(229 84% 5%) 0%, hsl(265 85% 8%) 50%, hsl(285 85% 12%) 100%);
+    --gradient-stone-glow: radial-gradient(circle, hsl(45 93% 58% / 0.3) 0%, hsl(45 93% 58% / 0.1) 50%, transparent 100%);
+    --gradient-moonbeam: linear-gradient(45deg, hsl(210 40% 85% / 0.1) 0%, hsl(210 40% 85% / 0.05) 100%);
+    --gradient-starfield: radial-gradient(circle at 20% 50%, hsl(265 85% 25% / 0.3) 0%, transparent 50%),
+                          radial-gradient(circle at 80% 20%, hsl(285 85% 30% / 0.3) 0%, transparent 50%),
+                          radial-gradient(circle at 40% 80%, hsl(245 85% 20% / 0.3) 0%, transparent 50%);
+
+    /* Magical Shadows */
+    --shadow-glow: 0 0 30px hsl(45 93% 58% / 0.3);
+    --shadow-moonlight: 0 10px 50px hsl(210 40% 85% / 0.1);
+    --shadow-cosmic: 0 25px 50px hsl(229 84% 5% / 0.8);
 
     --sidebar-background: 0 0% 98%;
 
@@ -102,4 +120,108 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components {
+  /* Cosmic Animation Effects */
+  .animate-twinkle {
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+  
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Star field background */
+  .starfield {
+    background: var(--gradient-cosmic);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .starfield::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-starfield);
+    opacity: 0.7;
+  }
+
+  /* Magical stone glow effect */
+  .stone-glow {
+    position: relative;
+  }
+  
+  .stone-glow::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: var(--gradient-stone-glow);
+    border-radius: 50%;
+    z-index: -1;
+  }
+
+  /* Stellar text effect */
+  .stellar-text {
+    background: linear-gradient(45deg, hsl(45 93% 58%), hsl(210 40% 85%), hsl(285 85% 60%));
+    background-size: 200% 200%;
+    animation: stellar-shimmer 4s ease-in-out infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@layer utilities {
+  .gradient-cosmic {
+    background: var(--gradient-cosmic);
+  }
+  
+  .gradient-stone-glow {
+    background: var(--gradient-stone-glow);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-moonlight {
+    box-shadow: var(--shadow-moonlight);
+  }
+  
+  .shadow-cosmic {
+    box-shadow: var(--shadow-cosmic);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes glow {
+  0% { filter: brightness(1) blur(0px); }
+  100% { filter: brightness(1.3) blur(1px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes stellar-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
