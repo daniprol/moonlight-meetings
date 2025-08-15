@@ -23,7 +23,7 @@ export const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-between min-h-screen px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Top Section - Title and Subtitle */}
-        <div className="text-center pt-16 sm:pt-20 lg:pt-24">
+        <div className="text-center pt-32 sm:pt-40 lg:pt-48">
           <div className="animate-fade-in">
             <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
               {messages.title}
@@ -72,12 +72,6 @@ export const HeroSection = () => {
         <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" style={{ animationDelay: '1.5s' }} />
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 border-2 border-secondary/40 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-secondary/60 rounded-full mt-2 animate-pulse" />
-        </div>
-      </div>
     </section>
   );
 };
