@@ -19,7 +19,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				cinzel: ['Cinzel', 'serif'],
+				orbitron: ['Orbitron', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

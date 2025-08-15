@@ -1,5 +1,5 @@
-import { Moon, Star } from "lucide-react";
-import { useLocale } from "@/hooks/useLocale";
+import { Globe } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ const languages = [
 ];
 
 export const LanguageSwitcher = () => {
-  const { locale, changeLocale } = useLocale();
+  const { locale, setLocale } = useLanguage();
   const currentLanguage = languages.find(lang => lang.code === locale);
 
   return (
@@ -27,10 +27,9 @@ export const LanguageSwitcher = () => {
             size="sm"
             className="bg-background/10 backdrop-blur-sm border border-primary/20 hover:bg-primary/10 hover:border-primary/40 text-primary-foreground"
           >
-            <Moon className="w-4 h-4 mr-2" />
+            <Globe className="w-4 h-4 mr-2" />
             <span className="hidden sm:inline">{currentLanguage?.name || 'English'}</span>
             <span className="sm:hidden">{currentLanguage?.flag || '🇺🇸'}</span>
-            <Star className="w-3 h-3 ml-2 animate-twinkle" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
@@ -40,7 +39,7 @@ export const LanguageSwitcher = () => {
           {languages.map((language) => (
             <DropdownMenuItem
               key={language.code}
-              onClick={() => changeLocale(language.code)}
+              onClick={() => setLocale(language.code as 'en' | 'es' | 'gl')}
               className="hover:bg-primary/10 cursor-pointer"
             >
               <span className="mr-2">{language.flag}</span>

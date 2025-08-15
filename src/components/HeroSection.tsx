@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { StarField } from "./StarField";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/shining-stone-hero.jpg";
-import { MapPin } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { Sparkles, MapPin } from "lucide-react";
 
 export const HeroSection = () => {
-  const t = useTranslations();
+  const { messages } = useLanguage();
   
   return (
     <section className="relative min-h-screen flex items-center justify-center starfield overflow-hidden">
@@ -24,14 +24,23 @@ export const HeroSection = () => {
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Magical Title */}
         <div className="mb-8 sm:mb-12 animate-fade-in">
-          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-cinzel font-bold mb-4 stellar-text leading-tight tracking-wide">
-            {t('title')}
+          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
+            {messages.title}
           </h1>
           <div className="flex items-center justify-center gap-2 mb-6">
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
             <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
-              {t('subtitle')}
+              {messages.subtitle}
             </p>
+            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
           </div>
+        </div>
+
+        {/* Description */}
+        <div className="mb-8 sm:mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            {messages.description}
+          </p>
         </div>
 
 
@@ -42,14 +51,14 @@ export const HeroSection = () => {
             className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
           >
             <MapPin className="w-5 h-5 mr-2" />
-            {t('enterMagic')}
+            {messages.enterMagic}
           </Button>
           <Button 
             variant="outline" 
             size="lg" 
             className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
           >
-            {t('learnMore')}
+            {messages.learnMore}
           </Button>
         </div>
 
