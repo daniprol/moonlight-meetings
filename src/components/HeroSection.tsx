@@ -23,7 +23,7 @@ export const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-between min-h-screen px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Top Section - Title and Subtitle */}
-        <div className="text-center pt-32 sm:pt-40 lg:pt-48">
+        <div className="text-center pt-48 sm:pt-60 lg:pt-48">
           <div className="animate-fade-in">
             <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
               {messages.title}
