@@ -1,0 +1,31 @@
+{
+  "hero": {
+    "title": "Piedra Brillante",
+    "subtitle": "Descubre lugares mágicos bajo la luz de la luna",
+    "description": "Encuentra piedras encantadas donde las parejas se reúnen bajo cielos estrellados. Conecta con almas afines y crea momentos inolvidables en los lugares más románticos de la naturaleza.",
+    "enterButton": "Entra en la Magia"
+  },
+  "features": {
+    "title": "Descubre la Magia",
+    "subtitle": "Todo lo que necesitas para encontrar tu lugar romántico perfecto",
+    "discover": {
+      "title": "Descubrir Lugares",
+      "description": "Encuentra piedras mágicas y lugares románticos en nuestro mapa interactivo"
+    },
+    "reviews": {
+      "title": "Dejar Reseñas",
+      "description": "Comparte tus experiencias y ayuda a otros a encontrar el momento perfecto"
+    },
+    "busy": {
+      "title": "Ver Actividad",
+      "description": "Comprueba qué tan ocupado está cada lugar antes de planificar tu visita"
+    },
+    "meet": {
+      "title": "Conocer Gente",
+      "description": "Conecta con almas gemelas que buscan momentos mágicos"
+    }
+  },
+  "language": {
+    "label": "Idioma"
+  }
+}
