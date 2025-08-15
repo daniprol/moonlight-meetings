@@ -21,45 +21,49 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/60 to-background/90" />
       
       {/* Content */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        {/* Magical Title */}
-        <div className="mb-8 sm:mb-12 animate-fade-in">
-          <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
-            {messages.title}
-          </h1>
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
-            <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
-              {messages.subtitle}
-            </p>
-            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
+      <div className="relative z-10 flex flex-col justify-between min-h-screen px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        {/* Top Section - Title and Subtitle */}
+        <div className="text-center pt-16 sm:pt-20 lg:pt-24">
+          <div className="animate-fade-in">
+            <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
+              {messages.title}
+            </h1>
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
+              <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
+                {messages.subtitle}
+              </p>
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
+            </div>
           </div>
         </div>
 
-        {/* Description */}
-        <div className="mb-8 sm:mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            {messages.description}
-          </p>
-        </div>
+        {/* Bottom Section - Description and Buttons */}
+        <div className="text-center pb-24 sm:pb-28 space-y-6 sm:space-y-8">
+          {/* Description */}
+          <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              {messages.description}
+            </p>
+          </div>
 
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <Button 
-            size="lg" 
-            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
-          >
-            <MapPin className="w-5 h-5 mr-2" />
-            {messages.enterMagic}
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
-          >
-            {messages.learnMore}
-          </Button>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <Button 
+              size="lg" 
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
+            >
+              <MapPin className="w-5 h-5 mr-2" />
+              {messages.enterMagic}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
+            >
+              {messages.learnMore}
+            </Button>
+          </div>
         </div>
 
         {/* Floating Elements */}
