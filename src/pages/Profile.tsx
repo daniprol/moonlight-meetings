@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
-import heroImage from '@/assets/shining-stone-hero.jpg';
+import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -19,53 +19,61 @@ export default function Profile() {
   const displayName = profile?.display_name || profile?.username || user?.email || 'Explorer';
 
   return (
-    <div className="relative min-h-screen starfield overflow-hidden">
+    <div className="min-h-screen bg-background">
       <StarField />
       
-      {/* Background Image with Overlay */}
+      {/* Subtle background pattern */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+        style={{ backgroundImage: `url(${starryBackground})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background/90" />
+      
+      <main className="relative z-10 min-h-screen">
+        {/* Header */}
+        <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border/50">
+          <div className="container py-4">
+            <h1 className="text-2xl font-semibold text-foreground">Profile</h1>
+          </div>
+        </div>
 
-      {/* Floating Elements */}
-      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/60 rounded-full animate-float hidden sm:block" />
-      <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-secondary/80 rounded-full animate-twinkle hidden sm:block" />
-      <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" />
-
-      <main className="relative z-10">
-        <div className="container py-8 space-y-6 pb-24">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16 shadow-glow border-2 border-primary/20">
+        <div className="container py-6 space-y-8 pb-24">
+          {/* Profile Header */}
+          <div className="flex items-center gap-4 p-6 bg-card rounded-2xl border border-border/50 shadow-sm">
+            <Avatar className="h-16 w-16 border-2 border-border">
               <AvatarImage src={profile?.avatar_url || ''} alt="User avatar" />
-              <AvatarFallback className="bg-primary/20 text-primary font-bold">{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="bg-muted text-foreground font-semibold">
+                {displayName.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
-            <div>
-              <h1 className="text-xl font-semibold stellar-text">Welcome back, {displayName}!</h1>
-              <p className="text-sm text-foreground/70">Under the moonlight, your discoveries shine.</p>
+            <div className="space-y-1">
+              <h2 className="text-xl font-semibold text-foreground">{displayName}</h2>
+              <p className="text-sm text-muted-foreground">Exploring magical places</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <Card className="bg-card/60 backdrop-blur border-border/50 hover:shadow-glow/30 transition-all">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold stellar-text">{stats.stones}</div>
-                <div className="text-xs text-foreground/70">Stones Added</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-card/60 backdrop-blur border-border/50 hover:shadow-glow/30 transition-all">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold stellar-text">{stats.reviews}</div>
-                <div className="text-xs text-foreground/70">Reviews Written</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-card/60 backdrop-blur border-border/50 hover:shadow-glow/30 transition-all">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold stellar-text">{stats.favorites}</div>
-                <div className="text-xs text-foreground/70">Favorites</div>
-              </CardContent>
-            </Card>
+          {/* Stats */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">Your Activity</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <Card className="bg-card border-border/50 rounded-2xl">
+                <CardContent className="p-6 text-center">
+                  <div className="text-3xl font-bold text-foreground mb-1">{stats.stones}</div>
+                  <div className="text-sm text-muted-foreground">Places Added</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-card border-border/50 rounded-2xl">
+                <CardContent className="p-6 text-center">
+                  <div className="text-3xl font-bold text-foreground mb-1">{stats.reviews}</div>
+                  <div className="text-sm text-muted-foreground">Reviews</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-card border-border/50 rounded-2xl">
+                <CardContent className="p-6 text-center">
+                  <div className="text-3xl font-bold text-foreground mb-1">{stats.favorites}</div>
+                  <div className="text-sm text-muted-foreground">Favorites</div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>

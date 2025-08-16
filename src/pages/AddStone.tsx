@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { dataProvider } from '@/lib/data-provider/supabase-provider';
 import { StarField } from '@/components/StarField';
-import heroImage from '@/assets/shining-stone-hero.jpg';
+import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function AddStone() {
   const { user } = useAuth();
@@ -46,74 +46,154 @@ export default function AddStone() {
   };
 
   return (
-    <div className="relative min-h-screen starfield overflow-hidden">
+    <div className="min-h-screen bg-background">
       <StarField />
       
-      {/* Background Image with Overlay */}
+      {/* Subtle background pattern */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+        style={{ backgroundImage: `url(${starryBackground})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background/90" />
+      
+      <main className="relative z-10 min-h-screen">
+        {/* Header */}
+        <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border/50">
+          <div className="container py-4">
+            <h1 className="text-2xl font-semibold text-foreground">Add New Place</h1>
+          </div>
+        </div>
 
-      {/* Floating Elements */}
-      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/60 rounded-full animate-float hidden sm:block" />
-      <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-secondary/80 rounded-full animate-twinkle hidden sm:block" />
-      <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" />
-
-      <main className="relative z-10">
         <div className="container py-6 space-y-6 pb-24">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold stellar-text">Add Your Magical Stone</h1>
-            <Progress value={progress} className="h-2 bg-card/60" />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-medium text-foreground">Step {step} of 3</h2>
+              <span className="text-sm text-muted-foreground">{Math.round(progress)}% complete</span>
+            </div>
+            <Progress value={progress} className="h-2" />
           </div>
 
           {step === 1 && (
-            <div className="space-y-3">
-              <p className="text-sm text-foreground/70">Move the map and drop the crosshair on the stone location.</p>
-              <div className="relative">
-                <EmbeddedMap className="w-full h-[40vh] rounded-xl shadow-cosmic" />
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <div className="h-6 w-6 border-2 border-primary rounded-full shadow-glow animate-pulse" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-foreground">Choose Location</h3>
+                <p className="text-sm text-muted-foreground">Pin the exact location of this special place</p>
+              </div>
+              
+              <div className="bg-card rounded-2xl p-1 shadow-sm border border-border/50">
+                <div className="relative">
+                  <EmbeddedMap className="w-full h-[350px] rounded-xl" />
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div className="h-6 w-6 border-2 border-primary rounded-full bg-background shadow-md" />
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-foreground/70 block mb-1">Latitude</label>
-                  <Input value={lat ?? ''} onChange={(e) => setLat(parseFloat(e.target.value))} placeholder="40.4168" className="bg-card/60 backdrop-blur" />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Latitude</label>
+                  <Input 
+                    value={lat ?? ''} 
+                    onChange={(e) => setLat(parseFloat(e.target.value))} 
+                    placeholder="40.4168" 
+                    className="h-12"
+                  />
                 </div>
-                <div>
-                  <label className="text-xs text-foreground/70 block mb-1">Longitude</label>
-                  <Input value={lng ?? ''} onChange={(e) => setLng(parseFloat(e.target.value))} placeholder="-3.7038" className="bg-card/60 backdrop-blur" />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Longitude</label>
+                  <Input 
+                    value={lng ?? ''} 
+                    onChange={(e) => setLng(parseFloat(e.target.value))} 
+                    placeholder="-3.7038" 
+                    className="h-12"
+                  />
                 </div>
               </div>
+              
               <div className="flex justify-end">
-                <Button onClick={() => setStep(2)} className="shadow-glow hover:shadow-glow/80">Next</Button>
+                <Button onClick={() => setStep(2)} className="h-12 px-6">Continue</Button>
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div className="space-y-3">
-              <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Stone Name" className="bg-card/60 backdrop-blur" />
-              <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What makes this spot special for a date?" className="bg-card/60 backdrop-blur min-h-[100px]" />
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Address (optional)" className="bg-card/60 backdrop-blur" />
-              <div className="flex justify-between">
-                <Button variant="secondary" onClick={() => setStep(1)} className="bg-card/60 backdrop-blur">Back</Button>
-                <Button onClick={() => setStep(3)} className="shadow-glow hover:shadow-glow/80">Next</Button>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="font-semibold text-foreground">Place Details</h3>
+                <p className="text-sm text-muted-foreground">Tell us about this special place</p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Place Name</label>
+                  <Input 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    placeholder="Enter a memorable name" 
+                    className="h-12"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Description</label>
+                  <Textarea 
+                    value={description} 
+                    onChange={(e) => setDescription(e.target.value)} 
+                    placeholder="What makes this place special? Perfect for dates, peaceful atmosphere..." 
+                    className="min-h-[120px] resize-none"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Address</label>
+                  <Input 
+                    value={address} 
+                    onChange={(e) => setAddress(e.target.value)} 
+                    placeholder="Street address (optional)" 
+                    className="h-12"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setStep(1)} className="h-12 flex-1">Back</Button>
+                <Button onClick={() => setStep(3)} className="h-12 flex-1">Continue</Button>
               </div>
             </div>
           )}
 
           {step === 3 && (
-            <div className="space-y-3">
+            <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm text-foreground/70 block">Upload photos (optional)</label>
-                <input type="file" multiple onChange={onFileChange} className="w-full text-sm text-foreground/80 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90" />
+                <h3 className="font-semibold text-foreground">Add Photos</h3>
+                <p className="text-sm text-muted-foreground">Share the beauty of this place (optional)</p>
               </div>
-              <div className="flex justify-between">
-                <Button variant="secondary" onClick={() => setStep(2)} className="bg-card/60 backdrop-blur">Back</Button>
-                <Button onClick={onSubmit} className="shadow-glow hover:shadow-glow/80">✨ Create Stone</Button>
+              
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-border rounded-2xl p-8 text-center bg-muted/20">
+                  <input 
+                    type="file" 
+                    multiple 
+                    onChange={onFileChange} 
+                    className="w-full text-sm text-foreground file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">Choose multiple photos to showcase this place</p>
+                </div>
+                
+                {photos.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground">{photos.length} photo(s) selected</p>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      {photos.map((file, i) => (
+                        <div key={i}>{file.name}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setStep(2)} className="h-12 flex-1">Back</Button>
+                <Button onClick={onSubmit} className="h-12 flex-1">Create Place</Button>
               </div>
             </div>
           )}
