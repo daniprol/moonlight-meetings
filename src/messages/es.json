@@ -2,5 +2,15 @@
   "title": "Piedra Brillante",
   "subtitle": "Descubre lugares mágicos bajo la luz de la luna",
   "enterMagic": "Entrar en la Magia",
-  "learnMore": "Saber Más"
+  "learnMore": "Saber Más",
+  "nav.explore": "Explorar",
+  "nav.myStones": "Mis Piedras",
+  "nav.addStone": "Añadir Piedra",
+  "nav.profile": "Perfil",
+  "explore.searchPlaceholder": "Busca por ciudad o nombre...",
+  "explore.topRated": "Mejor valoradas",
+  "explore.empty": "Aún no hay piedras aquí. ¡Sé el primero en añadir una!",
+  "my.favoritesEmpty": "Tu próxima gran cita te espera. Toca el ❤️ en cualquier piedra para guardarla aquí.",
+  "addStone.title": "Añadir Piedra",
+  "profile.welcome": "Bienvenido de nuevo"
 }

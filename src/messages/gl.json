@@ -2,5 +2,15 @@
   "title": "Pedra que Alumbra",
   "subtitle": "Descobre lugares máxicos baixo a luz da lúa",
   "enterMagic": "Entrar na Maxia",
-  "learnMore": "Saber Máis"
+  "learnMore": "Saber Máis",
+  "nav.explore": "Explorar",
+  "nav.myStones": "As Miñas Pedras",
+  "nav.addStone": "Engadir Pedra",
+  "nav.profile": "Perfil",
+  "explore.searchPlaceholder": "Busca por cidade ou nome...",
+  "explore.topRated": "Mellor valoradas",
+  "explore.empty": "Aínda non hai pedras aquí. Sé o primeiro en engadir unha!",
+  "my.favoritesEmpty": "A túa próxima gran cita agarda. Toca o ❤️ en calquera pedra para gardala aquí.",
+  "addStone.title": "Engadir Pedra",
+  "profile.welcome": "Benvido de novo"
 }

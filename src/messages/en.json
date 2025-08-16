@@ -2,5 +2,15 @@
   "title": "Shining Stone",
   "subtitle": "Discover magical places under moonlight",
   "enterMagic": "Enter the Magic",
-  "learnMore": "Learn More"
+  "learnMore": "Learn More",
+  "nav.explore": "Explore",
+  "nav.myStones": "My Stones",
+  "nav.addStone": "Add Stone",
+  "nav.profile": "Profile",
+  "explore.searchPlaceholder": "Find a stone by city or name...",
+  "explore.topRated": "Top Rated",
+  "explore.empty": "No stones found here yet. Be the first to add one!",
+  "my.favoritesEmpty": "Your next great date is waiting. Tap the ❤️ on any stone to save it here.",
+  "addStone.title": "Add Stone",
+  "profile.welcome": "Welcome back"
 }
