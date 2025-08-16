@@ -13,7 +13,7 @@ export const HeroSection = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="relative min-h-screen flex items-center justify-center starfield overflow-hidden">
+    <section className="relative h-screen flex items-center justify-center starfield overflow-hidden">
       <StarField />
       <LanguageSwitcher />
       
@@ -24,10 +24,15 @@ export const HeroSection = () => {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/60 to-background/90" />
       
+      {/* Floating Elements */}
+      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/60 rounded-full animate-float hidden sm:block" />
+      <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-secondary/80 rounded-full animate-twinkle hidden sm:block" />
+      <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" />
+
       {/* Content */}
-      <div className="relative z-10 flex flex-col justify-between min-h-screen px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+      <div className="relative z-10 flex flex-col justify-between h-full px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Top Section - Title and Subtitle */}
-        <div className="text-center pt-48 sm:pt-60 lg:pt-48">
+        <div className="text-center pt-16 sm:pt-20">
           <div className="animate-fade-in">
             <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
               {messages.title}
@@ -43,7 +48,7 @@ export const HeroSection = () => {
         </div>
 
         {/* Bottom Section - Description and Buttons */}
-        <div className="text-center pb-24 sm:pb-28 space-y-6 sm:space-y-8">
+        <div className="text-center pb-20 space-y-6 sm:space-y-8">
           {/* Description */}
           <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -58,6 +63,7 @@ export const HeroSection = () => {
                 <Button 
                   size="lg" 
                   className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
+                  onClick={() => navigate('/explore')}
                 >
                   <MapPin className="w-5 h-5 mr-2" />
                   Explore Places
@@ -93,11 +99,6 @@ export const HeroSection = () => {
             )}
           </div>
         </div>
-
-        {/* Floating Elements */}
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/60 rounded-full animate-float hidden sm:block" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-secondary/80 rounded-full animate-twinkle hidden sm:block" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-accent/40 rounded-full animate-pulse hidden sm:block" style={{ animationDelay: '1.5s' }} />
       </div>
 
     </section>
