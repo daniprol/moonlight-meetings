@@ -70,23 +70,12 @@ export default function AddStone() {
 
           {step === 1 && (
             <div className="space-y-3">
-              <p className="text-sm text-foreground/70">Click on the map to set the stone location, or enter coordinates manually.</p>
+              <p className="text-sm text-foreground/70">Move the map and drop the crosshair on the stone location.</p>
               <div className="relative">
-                <EmbeddedMap 
-                  className="w-full h-[40vh] rounded-xl shadow-cosmic" 
-                  center={{ lat: lat || 40.4168, lng: lng || -3.7038 }}
-                  zoom={lat && lng ? 15 : 5}
-                  onMapClick={(position) => {
-                    setLat(position.lat);
-                    setLng(position.lng);
-                  }}
-                  markers={lat && lng ? [{ id: 'selected', position: { lat, lng }, title: 'Selected Location' }] : []}
-                />
-                {(!lat || !lng) && (
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <div className="h-6 w-6 border-2 border-primary rounded-full shadow-glow animate-pulse" />
-                  </div>
-                )}
+                <EmbeddedMap className="w-full h-[40vh] rounded-xl shadow-cosmic" />
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <div className="h-6 w-6 border-2 border-primary rounded-full shadow-glow animate-pulse" />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -99,13 +88,7 @@ export default function AddStone() {
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button 
-                  onClick={() => setStep(2)} 
-                  disabled={!lat || !lng}
-                  className="shadow-glow hover:shadow-glow/80 disabled:opacity-50"
-                >
-                  Next
-                </Button>
+                <Button onClick={() => setStep(2)} className="shadow-glow hover:shadow-glow/80">Next</Button>
               </div>
             </div>
           )}
