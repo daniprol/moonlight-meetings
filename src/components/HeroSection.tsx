@@ -2,11 +2,15 @@ import { Button } from "@/components/ui/button";
 import { StarField } from "./StarField";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import heroImage from "@/assets/shining-stone-hero.jpg";
-import { Sparkles, MapPin } from "lucide-react";
+import { Sparkles, MapPin, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const HeroSection = () => {
   const { messages } = useLanguage();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   return (
     <section className="relative min-h-screen flex items-center justify-center starfield overflow-hidden">
@@ -49,20 +53,44 @@ export const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
-            >
-              <MapPin className="w-5 h-5 mr-2" />
-              {messages.enterMagic}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
-            >
-              {messages.learnMore}
-            </Button>
+            {user ? (
+              <>
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
+                >
+                  <MapPin className="w-5 h-5 mr-2" />
+                  Explore Places
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
+                  onClick={() => signOut()}
+                >
+                  <LogOut className="w-5 h-5 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary/50 hover:border-primary transition-all duration-300 px-8 py-4 text-lg font-semibold"
+                  onClick={() => navigate('/auth')}
+                >
+                  <MapPin className="w-5 h-5 mr-2" />
+                  {messages.enterMagic}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
+                >
+                  {messages.learnMore}
+                </Button>
+              </>
+            )}
           </div>
         </div>
 

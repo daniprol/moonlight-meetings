@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { NextIntlClientProvider } from 'next-intl';
+import { IntlProvider as ReactIntlProvider } from 'react-intl';
 import { useLocale } from '@/hooks/useLocale';
 
 interface IntlProviderProps {
@@ -31,8 +31,8 @@ export const IntlProvider = ({ children }: IntlProviderProps) => {
   }
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <ReactIntlProvider locale={locale} messages={messages}>
       {children}
-    </NextIntlClientProvider>
+    </ReactIntlProvider>
   );
 };
