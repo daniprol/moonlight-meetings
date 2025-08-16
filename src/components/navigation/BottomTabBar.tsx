@@ -10,7 +10,8 @@ const tabs = [
 
 export default function BottomTabBar() {
   const location = useLocation();
-  if (location.pathname === '/auth') return null;
+  // Hide on landing, auth, and 404 pages
+  if (location.pathname === '/' || location.pathname === '/auth' || location.pathname === '*') return null;
 
   const getCls = ({ isActive }: { isActive: boolean }) =>
     `flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg ${

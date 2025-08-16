@@ -38,48 +38,59 @@ export default function Explore() {
   };
 
   return (
-    <main className="relative min-h-screen pb-20 starfield">
-      <section className="container py-6">
+    <main className="relative min-h-screen starfield">
+      <div className="container py-6 space-y-6 pb-24">
         <div className="flex gap-3">
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Find a stone by city or name..."
-            className="bg-card/60"
+            className="bg-card/60 backdrop-blur"
           />
-          <button onClick={search} className="px-4 rounded-md bg-primary text-primary-foreground">Search</button>
+          <button onClick={search} className="px-4 rounded-md bg-primary text-primary-foreground font-medium shadow-glow hover:shadow-glow/80 transition-shadow">
+            Search
+          </button>
         </div>
-      </section>
-
-      {stones.length > 0 ? (
-        <section className="container grid gap-4">
-          <EmbeddedMap markers={markers} className="w-full h-[50vh] rounded-xl" />
-          <div className="grid gap-3">
-            {stones.map((s) => (
-              <Card key={s.id} className="bg-card/60">
-                <CardHeader>
-                  <CardTitle className="stellar-text">{s.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-foreground/80">{s.address_text || s.description}</CardContent>
-              </Card>
-            ))}
+        {stones.length > 0 ? (
+          <div className="space-y-4">
+            <EmbeddedMap markers={markers} className="w-full h-[45vh] rounded-xl shadow-cosmic" />
+            <div className="grid gap-3 max-h-[35vh] overflow-y-auto">
+              {stones.map((s) => (
+                <Card key={s.id} className="bg-card/60 backdrop-blur border-border/50 hover:shadow-glow/30 transition-all">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="stellar-text text-base">{s.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-sm text-foreground/80">{s.address_text || s.description}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs text-primary">⭐ {s.average_rating?.toFixed(1) || '0.0'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </section>
-      ) : (
-        <section className="container space-y-4">
-          <h2 className="text-lg font-medium text-foreground/80">Top Rated</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {topRated.map((s) => (
-              <Card key={s.id} className="bg-card/60 hover:shadow-glow transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-sm">{s.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-xs text-foreground/70">⭐ {s.average_rating?.toFixed(1) || '0.0'}</CardContent>
-              </Card>
-            ))}
+        ) : (
+          <div className="space-y-4">
+            <h2 className="text-xl font-medium text-foreground stellar-text">Top Rated Under Moonlight</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {topRated.map((s) => (
+                <Card key={s.id} className="bg-card/60 backdrop-blur border-border/50 hover:shadow-glow/30 transition-all group">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm stellar-text group-hover:animate-glow">{s.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-primary animate-twinkle">⭐</span>
+                      <span className="text-xs text-foreground/70">{s.average_rating?.toFixed(1) || '0.0'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </section>
-      )}
+        )}
+      </div>
     </main>
   );
 }
