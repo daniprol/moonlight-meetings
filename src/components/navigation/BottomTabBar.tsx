@@ -1,15 +1,17 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Search, Heart, PlusCircle, User } from 'lucide-react';
-
-const tabs = [
-  { to: '/explore', icon: Search, label: 'Explore' },
-  { to: '/my-stones', icon: Heart, label: 'My Stones' },
-  { to: '/add-stone', icon: PlusCircle, label: 'Add Stone' },
-  { to: '/profile', icon: User, label: 'Profile' },
-];
+import { useIntl } from 'react-intl';
 
 export default function BottomTabBar() {
   const location = useLocation();
+  const intl = useIntl();
+  
+  const tabs = [
+    { to: '/explore', icon: Search, label: intl.formatMessage({ id: 'nav.explore' }) },
+    { to: '/my-stones', icon: Heart, label: intl.formatMessage({ id: 'nav.myStones' }) },
+    { to: '/add-stone', icon: PlusCircle, label: intl.formatMessage({ id: 'nav.addStone' }) },
+    { to: '/profile', icon: User, label: intl.formatMessage({ id: 'nav.profile' }) },
+  ];
   // Hide on landing, auth, and 404 pages
   if (location.pathname === '/' || location.pathname === '/auth' || location.pathname === '*') return null;
 

@@ -3,16 +3,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useIntl } from 'react-intl';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function Profile() {
   const { user } = useAuth();
+  const intl = useIntl();
   const profile = user?.profile;
   const [stats, setStats] = useState({ stones: 0, reviews: 0, favorites: 0 });
 
   useEffect(() => {
-    document.title = 'Profile | Shining Stone';
-  }, []);
+    document.title = `${intl.formatMessage({ id: 'page.profile' })} | ${intl.formatMessage({ id: 'title' })}`;
+  }, [intl]);
 
   // TODO: fetch stats
 
@@ -28,11 +31,16 @@ export default function Profile() {
         style={{ backgroundImage: `url(${starryBackground})` }}
       />
       
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      
       <main className="relative z-10 min-h-screen">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border/50">
           <div className="container py-4">
-            <h1 className="text-2xl font-semibold text-foreground">Profile</h1>
+            <h1 className="text-2xl font-semibold text-foreground">{intl.formatMessage({ id: 'page.profile' })}</h1>
           </div>
         </div>
 
@@ -47,30 +55,30 @@ export default function Profile() {
             </Avatar>
             <div className="space-y-1">
               <h2 className="text-xl font-semibold text-foreground">{displayName}</h2>
-              <p className="text-sm text-muted-foreground">Exploring magical places</p>
+              <p className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'profile.exploring' })}</p>
             </div>
           </div>
 
           {/* Stats */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Your Activity</h3>
+            <h3 className="text-lg font-semibold text-foreground">{intl.formatMessage({ id: 'profile.activity' })}</h3>
             <div className="grid grid-cols-3 gap-4">
               <Card className="bg-card border-border/50 rounded-2xl">
                 <CardContent className="p-6 text-center">
                   <div className="text-3xl font-bold text-foreground mb-1">{stats.stones}</div>
-                  <div className="text-sm text-muted-foreground">Places Added</div>
+                  <div className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'profile.placesAdded' })}</div>
                 </CardContent>
               </Card>
               <Card className="bg-card border-border/50 rounded-2xl">
                 <CardContent className="p-6 text-center">
                   <div className="text-3xl font-bold text-foreground mb-1">{stats.reviews}</div>
-                  <div className="text-sm text-muted-foreground">Reviews</div>
+                  <div className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'profile.reviews' })}</div>
                 </CardContent>
               </Card>
               <Card className="bg-card border-border/50 rounded-2xl">
                 <CardContent className="p-6 text-center">
                   <div className="text-3xl font-bold text-foreground mb-1">{stats.favorites}</div>
-                  <div className="text-sm text-muted-foreground">Favorites</div>
+                  <div className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'profile.favorites' })}</div>
                 </CardContent>
               </Card>
             </div>

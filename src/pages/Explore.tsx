@@ -5,22 +5,24 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { StarField } from '@/components/StarField';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useIntl } from 'react-intl';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function Explore() {
   const { user } = useAuth();
+  const intl = useIntl();
   const [q, setQ] = useState('');
   const [stones, setStones] = useState<any[]>([]);
   const [topRated, setTopRated] = useState<any[]>([]);
 
   useEffect(() => {
-    document.title = 'Explore Stones | Shining Stone';
-    // Meta description
+    document.title = `${intl.formatMessage({ id: 'page.explore' })} | ${intl.formatMessage({ id: 'title' })}`;
     const meta = document.querySelector('meta[name="description"]') || document.createElement('meta');
     meta.setAttribute('name', 'description');
-    meta.setAttribute('content', 'Explore magical stones and date spots under moonlight.');
+    meta.setAttribute('content', intl.formatMessage({ id: 'description' }));
     document.head.appendChild(meta);
-  }, []);
+  }, [intl]);
 
   useEffect(() => {
     dataProvider.getTopRatedStones(8).then(setTopRated);
@@ -49,11 +51,16 @@ export default function Explore() {
         style={{ backgroundImage: `url(${starryBackground})` }}
       />
       
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      
       <main className="relative z-10 min-h-screen">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border/50">
           <div className="container py-4">
-            <h1 className="text-2xl font-semibold text-foreground">Explore</h1>
+            <h1 className="text-2xl font-semibold text-foreground">{intl.formatMessage({ id: 'page.explore' })}</h1>
           </div>
         </div>
 
@@ -64,14 +71,14 @@ export default function Explore() {
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search for magical places..."
+                placeholder={intl.formatMessage({ id: 'explore.searchPlaceholder' })}
                 className="h-12 text-base bg-card border-border/50 rounded-xl shadow-sm"
               />
               <button 
                 onClick={search} 
                 className="px-6 h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors shadow-sm"
               >
-                Search
+                {intl.formatMessage({ id: 'explore.search' })}
               </button>
             </div>
           </div>
@@ -83,7 +90,7 @@ export default function Explore() {
               </div>
               
               <div className="space-y-3">
-                <h2 className="text-lg font-semibold text-foreground">Search Results</h2>
+                <h2 className="text-lg font-semibold text-foreground">{intl.formatMessage({ id: 'explore.searchResults' })}</h2>
                 <div className="space-y-3 max-h-[400px] overflow-y-auto">
                   {stones.map((s) => (
                     <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl">
@@ -105,8 +112,8 @@ export default function Explore() {
           ) : (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-foreground">Popular Places</h2>
-                <span className="text-sm text-muted-foreground">Top rated</span>
+                <h2 className="text-lg font-semibold text-foreground">{intl.formatMessage({ id: 'explore.popularPlaces' })}</h2>
+                <span className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'explore.topRated' })}</span>
               </div>
               
               <div className="grid grid-cols-2 gap-4">

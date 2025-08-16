@@ -4,15 +4,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useIntl } from 'react-intl';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function MyStones() {
   const { user } = useAuth();
+  const intl = useIntl();
   const [favorites, setFavorites] = useState<any[]>([]);
 
   useEffect(() => {
-    document.title = 'My Stones | Shining Stone';
-  }, []);
+    document.title = `${intl.formatMessage({ id: 'page.myCollection' })} | ${intl.formatMessage({ id: 'title' })}`;
+  }, [intl]);
 
   useEffect(() => {
     if (user) dataProvider.getFavoriteStones(user.id).then(setFavorites);
@@ -28,20 +31,25 @@ export default function MyStones() {
         style={{ backgroundImage: `url(${starryBackground})` }}
       />
       
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      
       <main className="relative z-10 min-h-screen">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border/50">
           <div className="container py-4">
-            <h1 className="text-2xl font-semibold text-foreground">My Collection</h1>
+            <h1 className="text-2xl font-semibold text-foreground">{intl.formatMessage({ id: 'page.myCollection' })}</h1>
           </div>
         </div>
 
         <div className="container py-6 pb-24">
           <Tabs defaultValue="favorites" className="space-y-6">
             <TabsList className="bg-card border border-border/50 p-1 rounded-xl shadow-sm">
-              <TabsTrigger value="favorites" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">Favorites</TabsTrigger>
-              <TabsTrigger value="want" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">Want to Visit</TabsTrigger>
-              <TabsTrigger value="reviewed" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">Reviewed</TabsTrigger>
+              <TabsTrigger value="favorites" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.favorites' })}</TabsTrigger>
+              <TabsTrigger value="want" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.wantToVisit' })}</TabsTrigger>
+              <TabsTrigger value="reviewed" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.reviewed' })}</TabsTrigger>
             </TabsList>
             <TabsContent value="favorites" className="space-y-4">
               {favorites.length === 0 ? (
@@ -50,8 +58,8 @@ export default function MyStones() {
                     <span className="text-2xl">💫</span>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-foreground">No favorites yet</h3>
-                    <p className="text-muted-foreground">Save places you love to see them here</p>
+                    <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.favorites.empty.title' })}</h3>
+                    <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.favorites.empty.description' })}</p>
                   </div>
                 </div>
               ) : (
@@ -73,8 +81,8 @@ export default function MyStones() {
                   <span className="text-2xl">🌙</span>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">Wishlist coming soon</h3>
-                  <p className="text-muted-foreground">Mark places you want to visit</p>
+                  <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.wantToVisit.title' })}</h3>
+                  <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.wantToVisit.description' })}</p>
                 </div>
               </div>
             </TabsContent>
@@ -84,8 +92,8 @@ export default function MyStones() {
                   <span className="text-2xl">✨</span>
                 </div>
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">Your reviews</h3>
-                  <p className="text-muted-foreground">Share your experiences with others</p>
+                  <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.reviewed.title' })}</h3>
+                  <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.reviewed.description' })}</p>
                 </div>
               </div>
             </TabsContent>
