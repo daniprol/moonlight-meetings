@@ -1,13 +1,13 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { IntlProvider as ReactIntlProvider } from 'react-intl';
-import { useLocale } from '@/hooks/useLocale';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface IntlProviderProps {
   children: ReactNode;
 }
 
 export const IntlProvider = ({ children }: IntlProviderProps) => {
-  const { locale } = useLocale();
+  const { locale } = useLanguage();
   const [messages, setMessages] = useState<any>(null);
 
   useEffect(() => {

@@ -6,16 +6,21 @@ import { useAuth } from "@/contexts/AuthContext";
 import heroImage from "@/assets/shining-stone-hero.jpg";
 import { Sparkles, MapPin, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from 'react-intl';
 
 export const HeroSection = () => {
-  const { messages } = useLanguage();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const intl = useIntl();
   
   return (
     <section className="relative h-screen flex items-center justify-center starfield overflow-hidden">
       <StarField />
-      <LanguageSwitcher />
+      
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
       
       {/* Background Image with Overlay */}
       <div 
@@ -35,12 +40,12 @@ export const HeroSection = () => {
         <div className="text-center pt-16 sm:pt-20">
           <div className="animate-fade-in">
             <h1 className="text-5xl sm:text-7xl lg:text-9xl font-orbitron font-bold mb-4 stellar-text leading-tight tracking-wider">
-              {messages.title}
+              {intl.formatMessage({ id: 'title' })}
             </h1>
             <div className="flex items-center justify-center gap-2">
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
               <p className="text-lg sm:text-xl lg:text-2xl text-secondary/90 font-light">
-                {messages.subtitle}
+                {intl.formatMessage({ id: 'subtitle' })}
               </p>
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
             </div>
@@ -52,7 +57,7 @@ export const HeroSection = () => {
           {/* Description */}
           <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {messages.description}
+              {intl.formatMessage({ id: 'description' })}
             </p>
           </div>
 
@@ -66,7 +71,7 @@ export const HeroSection = () => {
                   onClick={() => navigate('/explore')}
                 >
                   <MapPin className="w-5 h-5 mr-2" />
-                  Explore Places
+                  {intl.formatMessage({ id: 'explorePlaces' })}
                 </Button>
                 <Button 
                   variant="outline" 
@@ -75,7 +80,7 @@ export const HeroSection = () => {
                   onClick={() => signOut()}
                 >
                   <LogOut className="w-5 h-5 mr-2" />
-                  Sign Out
+                  {intl.formatMessage({ id: 'signOut' })}
                 </Button>
               </>
             ) : (
@@ -86,14 +91,14 @@ export const HeroSection = () => {
                   onClick={() => navigate('/auth')}
                 >
                   <MapPin className="w-5 h-5 mr-2" />
-                  {messages.enterMagic}
+                  {intl.formatMessage({ id: 'enterMagic' })}
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg" 
                   className="w-full sm:w-auto border-secondary/30 text-secondary hover:bg-secondary/10 px-8 py-4 text-lg"
                 >
-                  {messages.learnMore}
+                  {intl.formatMessage({ id: 'learnMore' })}
                 </Button>
               </>
             )}
