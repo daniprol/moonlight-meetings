@@ -53,6 +53,7 @@ export interface IDataProvider {
   findStones(query: string): Promise<Stone[]>; // search by name/address
   getTopRatedStones(limit: number): Promise<Stone[]>;
   addStone(stoneData: NewStone, photos: File[], authUserId: string): Promise<Stone>;
+  getStonesByCreator(authUserId: string): Promise<Stone[]>;
 
   // Review Methods
   getReviewsForStone(stoneId: string): Promise<Review[]>;
