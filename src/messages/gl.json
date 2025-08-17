@@ -23,12 +23,12 @@
   "loading": "Cargando...",
   "enterMagicalRealm": "Entra no reino máxico",
   "nav.explore": "Explorar",
-  "nav.myStones": "As Miñas Pedras",
+  "nav.myStones": "Miñas Pedras",
   "nav.addStone": "Engadir Pedra",
   "nav.profile": "Perfil",
   "page.explore": "Explorar",
   "page.myCollection": "A Miña Colección",
-  "page.addPlace": "Engadir Novo Lugar",
+  "page.addPlace": "Engadir nova pedra",
   "page.profile": "Perfil",
   "explore.search": "Buscar",
   "explore.searchPlaceholder": "Buscar lugares máxicos...",
@@ -72,7 +72,7 @@
   "profile.reviews": "Reseñas",
   "profile.favorites": "Favoritos",
   "profile.exploring": "Explorando lugares máxicos",
-  
+
   "form.validation.latitudeRequired": "A latitude é obrigatoria",
   "form.validation.latitudeInvalid": "A latitude debe ser un número",
   "form.validation.latitudeRange": "A latitude debe estar entre -90 e 90",
@@ -84,17 +84,17 @@
   "form.validation.nameMaxLength": "O nome do lugar debe ter menos de 100 caracteres",
   "form.validation.descriptionMaxLength": "A descrición debe ter menos de 500 caracteres",
   "form.validation.addressMaxLength": "O enderezo debe ter menos de 200 caracteres",
-  
+
   "form.description.placeName": "Escolle un nome descriptivo para este lugar (3-100 caracteres)",
   "form.description.description": "Descrición opcional (máx. 500 caracteres)",
   "form.description.address": "Enderezo opcional ou descrición de localización (máx. 200 caracteres)",
   "form.description.photos": "Sube fotos para mostrar este lugar (opcional)",
-  
+
   "form.confirmation.title": "Cambios Sen Gardar",
   "form.confirmation.message": "Tes cambios sen gardar. ¿Estás seguro de que queres saír desta páxina?",
   "form.confirmation.leave": "Saír da Páxina",
   "form.confirmation.stay": "Permanecer na Páxina",
-  
+
   "form.status.creating": "Creando...",
   "form.status.success": "¡Éxito!",
   "form.status.successMessage": "Lugar engadido exitosamente",

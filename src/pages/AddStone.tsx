@@ -74,11 +74,10 @@ export default function AddStone() {
     mode: 'onChange',
   });
 
-  // NEW: All the complex sync logic is now in this single hook call
-  const { markerPosition, handleMapClick, isPending } = useCoordinateSync(form);
+  // NEW: The hook now provides the map's camera state and a handler for when it changes.
+  const { mapCenter, mapZoom, handleCameraChange, isPending } = useCoordinateSync(form);
 
-  // The single marker to display on the map
-  const mapMarkers: MapMarker[] = markerPosition ? [{ id: 'selected-location', position: markerPosition }] : [];
+  // REMOVED: mapMarkers array is no longer needed.
 
   const isFormDirty = form.formState.isDirty && step > 1;
 
@@ -146,14 +145,19 @@ export default function AddStone() {
                     <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'addStone.step1.title' })}</h3>
                     <p className="text-sm text-muted-foreground">{intl.formatMessage({ id: 'addStone.step1.description' })}</p>
                   </div>
-                  <div className={`bg-card rounded-2xl p-1 shadow-sm border border-border/50 transition-opacity ${isPending ? 'opacity-75' : 'opacity-100'}`}>
+                  <div className={`relative bg-card rounded-2xl p-1 shadow-sm border border-border/50 transition-opacity ${isPending ? 'opacity-75' : 'opacity-100'}`}>
                     <EmbeddedMap
                       className="w-full h-[350px] rounded-xl"
-                      markers={mapMarkers}
-                      onMapClick={handleMapClick}
-                      center={markerPosition}
-                      zoom={markerPosition ? 12 : 5}
+                      onCameraChange={handleCameraChange} // NEW: Pass camera change handler
+                      center={mapCenter} // The map is controlled by the hook
+                      zoom={mapZoom}
                     />
+                    {/* This is the stationary "red flag" marker in the center */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full pointer-events-none">
+                      <svg viewBox="0 0 24 24" className="w-8 h-8 text-red-500 drop-shadow-lg">
+                        <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <FormField control={form.control} name="latitude" render={({ field }) => (

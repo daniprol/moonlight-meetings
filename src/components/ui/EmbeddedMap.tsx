@@ -1,34 +1,37 @@
-import React from 'react';
-import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+import React, { useEffect } from 'react';
+import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
+import { O_GROVE_BOUNDS, O_GROVE_CENTER } from '@/lib/map-config';
 
-// Exporting MapMarker so other components can use the type
-export interface MapMarker {
-  id: string;
-  position: { lat: number; lng: number };
-  title?: string;
-}
+/**
+ * A controller component to programmatically pan and zoom the map.
+ * This is the standard way to command an uncontrolled map.
+ */
+const MapController = ({ center, zoom }: { center: google.maps.LatLngLiteral; zoom: number }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!map) return;
+    map.panTo(center);
+    map.setZoom(zoom);
+  }, [map, center, zoom]);
+
+  return null;
+};
 
 interface EmbeddedMapProps {
   center?: { lat: number; lng: number } | null;
   zoom?: number;
-  markers?: MapMarker[];
-  onMarkerClick?: (id: string) => void;
-  onMapClick?: (e: google.maps.MapMouseEvent) => void; // Prop to handle map clicks
+  onCameraChange?: (e: { center: google.maps.LatLngLiteral; zoom: number }) => void;
   className?: string;
 }
 
 const EmbeddedMap: React.FC<EmbeddedMapProps> = ({
   center,
-  zoom = 5,
-  markers = [],
-  onMarkerClick,
-  onMapClick, // Handler for map clicks
+  zoom = 12,
+  onCameraChange,
   className,
 }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
-  // Use a default center if the provided center is null or undefined
-  const mapCenter = center || { lat: 40.4168, lng: -3.7038 };
 
   if (!apiKey) {
     return (
@@ -42,23 +45,26 @@ const EmbeddedMap: React.FC<EmbeddedMapProps> = ({
     <APIProvider apiKey={apiKey}>
       <div className={className || 'w-full h-[60vh] rounded-lg shadow-moonlight'}>
         <Map
-          key={`${mapCenter.lat}-${mapCenter.lng}-${zoom}`} // Force re-render on center/zoom change
-          center={mapCenter}
-          zoom={zoom}
+          defaultCenter={O_GROVE_CENTER}
+          defaultZoom={12}
           mapId={'DEMO_MAP_ID'}
           disableDefaultUI={false}
           gestureHandling={'greedy'}
           style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }}
-          onClick={onMapClick} // Attach the click handler here
+          restriction={{
+            latLngBounds: O_GROVE_BOUNDS,
+            strictBounds: false,
+          }}
+          onIdle={(e) => {
+            if (onCameraChange && e.map) {
+              const newCenter = e.map.getCenter()!;
+              const newZoom = e.map.getZoom()!;
+              onCameraChange({ center: newCenter.toJSON(), zoom: newZoom });
+            }
+          }}
         >
-          {markers.map((m) => (
-            <Marker
-              key={m.id}
-              position={m.position}
-              title={m.title}
-              onClick={() => onMarkerClick && onMarkerClick(m.id)}
-            />
-          ))}
+          {/* The MapController only runs when the parent needs to command the map */}
+          {center && <MapController center={center} zoom={zoom} />}
         </Map>
       </div>
     </APIProvider>

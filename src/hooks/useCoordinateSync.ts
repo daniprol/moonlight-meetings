@@ -1,55 +1,64 @@
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useDebounce } from '@/hooks/useDebounce';
 import { isValidCoordinate } from '@/lib/utils';
+import { O_GROVE_BOUNDS, O_GROVE_CENTER } from '@/lib/map-config';
+
+interface MapCamera {
+  center: google.maps.LatLngLiteral;
+  zoom: number;
+}
 
 /**
- * A custom hook to synchronize coordinates between a react-hook-form
- * and a map component.
- * @param form The form instance from useForm.
- * @returns An object with marker position, map click handler, and transition state.
+ * A robust hook to handle 2-way synchronization between a form and a map's camera.
+ * It uses a ref to track the source of updates to prevent feedback loops.
  */
 export function useCoordinateSync(form: UseFormReturn<any>) {
-  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(null);
+  const [mapCamera, setMapCamera] = useState<MapCamera>({ center: O_GROVE_CENTER, zoom: 12 });
   const [isPending, startTransition] = useTransition();
 
-  // Watch form fields for latitude and longitude
+  // Ref to track if the last update came from the map, to prevent feedback loops.
+  const updateSource = useRef<'form' | 'map'>('form');
+
+  // --- Data flow: Form Inputs -> Map Camera ---
   const latValue = form.watch('latitude');
   const lngValue = form.watch('longitude');
-
-  // Debounce the watched values to avoid excessive map updates
   const debouncedLat = useDebounce(latValue, 300);
   const debouncedLng = useDebounce(lngValue, 300);
 
-  // Effect to update the map marker when debounced coordinates change
   useEffect(() => {
-    if (isValidCoordinate(debouncedLat, debouncedLng)) {
-      // Use startTransition to prevent UI blocking while map updates
+    // If the last update came from the map, we must not send a command back to the map.
+    // We simply reset the flag and exit the effect.
+    if (updateSource.current === 'map') {
+      updateSource.current = 'form'; // Reset for the next form input
+      return;
+    }
+
+    if (isValidCoordinate(debouncedLat, debouncedLng, O_GROVE_BOUNDS)) {
       startTransition(() => {
-        setMarkerPosition({ lat: debouncedLat, lng: debouncedLng });
+        setMapCamera((prev) => ({ ...prev, center: { lat: debouncedLat, lng: debouncedLng } }));
       });
     }
-  }, [debouncedLat, debouncedLng]);
+  }, [debouncedLat, debouncedLng, form]);
 
-  // Handler for when the user clicks on the map
-  const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      const lat = e.latLng.lat();
-      const lng = e.latLng.lng();
-      
-      startTransition(() => {
-        setMarkerPosition({ lat, lng });
-      });
 
-      // Update form values and trigger validation
-      form.setValue('latitude', lat, { shouldValidate: true, shouldDirty: true });
-      form.setValue('longitude', lng, { shouldValidate: true, shouldDirty: true });
-    }
+  // --- Data flow: Map Camera -> Form Inputs ---
+  const handleCameraChange = (e: MapCamera) => {
+    // When the map moves, flag that it is the source of the upcoming update.
+    updateSource.current = 'map';
+
+    // Update the form fields. The ref guard above will prevent this from causing a snap back.
+    form.setValue('latitude', e.center.lat, { shouldValidate: true, shouldDirty: true });
+    form.setValue('longitude', e.center.lng, { shouldValidate: true, shouldDirty: true });
+
+    // We still update the zoom level instantly.
+    setMapCamera((prev) => ({ ...prev, zoom: e.zoom }));
   };
 
   return {
-    markerPosition,
-    handleMapClick,
-    isPending, // The component can use this to show a loading state
+    mapCenter: mapCamera.center,
+    mapZoom: mapCamera.zoom,
+    handleCameraChange,
+    isPending,
   };
 }

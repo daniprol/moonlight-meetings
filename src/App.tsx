@@ -13,7 +13,7 @@ import Explore from "./pages/Explore";
 import MyStones from "./pages/MyStones";
 import AddStone from "./pages/AddStone";
 import Profile from "./pages/Profile";
-import DevRoleSelector from "@/components/DevRoleSelector";
+// import DevRoleSelector from "@/components/DevRoleSelector";
 import BottomTabBar from "@/components/navigation/BottomTabBar";
 const queryClient = new QueryClient();
 
@@ -36,7 +36,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-              <DevRoleSelector />
+              {/* <DevRoleSelector /> */}
               <BottomTabBar />
             </BrowserRouter>
           </TooltipProvider>
