@@ -52,7 +52,12 @@ export default function StonePage() {
       ]);
       
       if (!stoneData) {
-        navigate('/not-found');
+        toast({
+          title: "Stone not found",
+          description: "The stone you're looking for doesn't exist",
+          variant: "destructive"
+        });
+        navigate('/explore');
         return;
       }
       
