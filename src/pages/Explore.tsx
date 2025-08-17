@@ -37,7 +37,7 @@ export default function Explore() {
   const currentSelectedStone = selectedStone || hoveredStone;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-hidden">
       <StarField />
       
       {/* Subtle background pattern */}
@@ -51,7 +51,7 @@ export default function Explore() {
         <LanguageSwitcher />
       </div>
       
-      <main className="relative z-10 min-h-screen">
+      <main className="relative z-10 min-h-screen flex flex-col">
         {/* Header */}
         <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-xl border-b border-border/50">
           <div className="container py-4">
@@ -61,23 +61,22 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Map with Overlay */}
-        <div className="relative h-[calc(100vh-5rem)]">
-          {/* Full Map */}
+        {/* Map Section - Fixed 60% height */}
+        <div className="relative h-[60vh] flex-shrink-0">
           <ExploreMap 
             stones={topRated}
             onStoneSelect={handleStoneSelect}
             selectedStone={currentSelectedStone}
             className="w-full h-full"
           />
-
-          {/* Popular Places Overlay */}
-          <PopularPlaces 
-            stones={topRated}
-            selectedStone={currentSelectedStone}
-            onStoneHover={handleStoneHover}
-          />
         </div>
+
+        {/* Popular Places Overlay - Draggable bottom sheet */}
+        <PopularPlaces 
+          stones={topRated}
+          selectedStone={currentSelectedStone}
+          onStoneHover={handleStoneHover}
+        />
       </main>
     </div>
   );

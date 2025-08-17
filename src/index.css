@@ -203,6 +203,42 @@ All colors MUST be HSL.
   .shadow-cosmic {
     box-shadow: var(--shadow-cosmic);
   }
+
+  /* Mobile-first minimal scrollbars */
+  .scrollbar-minimal {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  
+  .scrollbar-minimal::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+  }
+  
+  .scrollbar-minimal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-minimal::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 1px;
+  }
+  
+  .scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Desktop scrollbars */
+  @media (min-width: 768px) {
+    .scrollbar-minimal::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    .scrollbar-minimal::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+    }
+  }
 }
 
 @keyframes twinkle {
