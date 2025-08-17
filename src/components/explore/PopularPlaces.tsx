@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useIntl } from 'react-intl';
 import { Stone } from '@/lib/data-provider/interface';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StoneImage from '@/components/ui/StoneImage';
-import { Star, MapPin, Filter, ArrowUpDown, GripHorizontal } from 'lucide-react';
+import { Star, MapPin, Filter, ArrowUpDown } from 'lucide-react';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 
 interface PopularPlacesProps {
@@ -21,11 +21,36 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
 }) => {
   const navigate = useNavigate();
   const intl = useIntl();
-  const { height, isDragging, containerRef } = useBottomSheet({
-    minHeight: 40,
-    maxHeight: 80,
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  const { height, isDragging, isScrolling, containerRef, expandToMax } = useBottomSheet({
+    minHeight: 40, // 40% of viewport
+    maxHeight: 80, // 80% of viewport
     initialHeight: 40
   });
+
+  const heightInPixels = (height / 100) * window.innerHeight;
+
+  const isExpanded = height >= 75; // Consider expanded when >= 75% of max height
+
+  // Handle wheel scroll to expand panel
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (!isExpanded && e.deltaY < 0) {
+        // Scrolling up when not expanded - expand the panel
+        e.preventDefault();
+        expandToMax();
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => {
+        container.removeEventListener('wheel', handleWheel);
+      };
+    }
+  }, [isExpanded, expandToMax, containerRef]);
 
   const handleStoneClick = (stone: Stone) => {
     navigate(`/stone/${stone.id}`);
@@ -36,7 +61,7 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
       ref={containerRef}
       className="fixed inset-x-0 bottom-0 z-30 bg-background/95 backdrop-blur-xl border-t border-border shadow-2xl transition-all duration-300 ease-out"
       style={{ 
-        height: `${height}vh`,
+        height: `${heightInPixels}px`,
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px'
       }}
@@ -65,11 +90,11 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="text-xs h-8 px-3">
               <Filter className="w-3 h-3 mr-1" />
-              Filters
+              {intl.formatMessage({ id: 'explore.filters' })}
             </Button>
             <Button variant="outline" size="sm" className="text-xs h-8 px-3">
               <ArrowUpDown className="w-3 h-3 mr-1" />
-              Sort
+              {intl.formatMessage({ id: 'explore.sort' })}
             </Button>
           </div>
         </div>
@@ -79,7 +104,9 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
       <div 
         data-scroll-area
         className="overflow-y-auto scrollbar-minimal px-4 pb-safe"
-        style={{ height: `calc(${height}vh - 120px)` }}
+        style={{ 
+          height: `${heightInPixels - 120}px` // Account for header and drag handle
+        }}
       >
         <div className="space-y-3 py-2">
           {stones.map((stone) => (
@@ -98,7 +125,7 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
                 <div className="flex items-center gap-3">
                   {/* Stone Image */}
                   <div className="flex-shrink-0">
-                    <StoneImage 
+                    <StoneImage
                       stoneId={stone.id}
                       stoneName={stone.name}
                       thumbnailPath={stone.thumbnail_path}
