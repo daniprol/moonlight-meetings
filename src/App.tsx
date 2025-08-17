@@ -35,6 +35,7 @@ const App = () => (
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/stone/:id" element={<Stone />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/404" element={<NotFound />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

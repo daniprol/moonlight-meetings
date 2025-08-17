@@ -52,12 +52,8 @@ export default function StonePage() {
       ]);
       
       if (!stoneData) {
-        toast({
-          title: "Stone not found",
-          description: "The stone you're looking for doesn't exist",
-          variant: "destructive"
-        });
-        navigate('/explore');
+        // Navigate to 404 page instead of showing toast
+        navigate('/404', { replace: true });
         return;
       }
       
