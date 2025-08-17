@@ -6,15 +6,11 @@ import { StarField } from '@/components/StarField';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import ExploreMap from '@/components/explore/ExploreMap';
 import PopularPlaces from '@/components/explore/PopularPlaces';
-import SearchSection from '@/components/explore/SearchSection';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function Explore() {
   const intl = useIntl();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Stone[]>([]);
   const [topRated, setTopRated] = useState<Stone[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedStone, setSelectedStone] = useState<Stone | null>(null);
   const [hoveredStone, setHoveredStone] = useState<Stone | null>(null);
 
@@ -27,26 +23,8 @@ export default function Explore() {
   }, [intl]);
 
   useEffect(() => {
-    dataProvider.getTopRatedStones(12).then(setTopRated);
+    dataProvider.getTopRatedStones(20).then(setTopRated);
   }, []);
-
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const results = await dataProvider.findStones(query);
-      setSearchResults(results);
-    } catch (error) {
-      console.error('Search error:', error);
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
 
   const handleStoneSelect = (stone: Stone | null) => {
     setSelectedStone(stone);
@@ -56,8 +34,6 @@ export default function Explore() {
     setHoveredStone(stone);
   };
 
-  // Determine which stones to display in the map and list
-  const displayedStones = searchResults.length > 0 ? searchResults : topRated;
   const currentSelectedStone = selectedStone || hoveredStone;
 
   return (
@@ -85,60 +61,22 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="container py-6 space-y-6 pb-24">
-          {/* Search Section */}
-          <SearchSection 
-            onSearch={handleSearch}
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-            isSearching={isSearching}
+        {/* Map with Overlay */}
+        <div className="relative h-[calc(100vh-5rem)]">
+          {/* Full Map */}
+          <ExploreMap 
+            stones={topRated}
+            onStoneSelect={handleStoneSelect}
+            selectedStone={currentSelectedStone}
+            className="w-full h-full"
           />
 
-          {/* Map and Places Layout */}
-          {displayedStones.length > 0 ? (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 min-h-[70vh]">
-              {/* Map Section - Takes 2/3 on large screens */}
-              <div className="xl:col-span-2 order-2 xl:order-1">
-                <div className="sticky top-24 bg-card rounded-2xl p-2 shadow-sm border border-border/50 h-[70vh]">
-                  <ExploreMap 
-                    stones={displayedStones}
-                    onStoneSelect={handleStoneSelect}
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-
-              {/* Places List - Takes 1/3 on large screens */}
-              <div className="xl:col-span-1 order-1 xl:order-2">
-                <div className="h-[70vh] overflow-y-auto pr-2">
-                  <PopularPlaces 
-                    stones={displayedStones}
-                    selectedStone={currentSelectedStone}
-                    onStoneHover={handleStoneHover}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Empty State */
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-foreground">
-                  {searchQuery 
-                    ? intl.formatMessage({ id: 'explore.noResults' }) 
-                    : intl.formatMessage({ id: 'explore.noPlaces' })
-                  }
-                </h3>
-                <p className="text-muted-foreground max-w-md">
-                  {searchQuery 
-                    ? `No stones found for "${searchQuery}". Try a different search term.`
-                    : 'No places available at the moment. Check back later!'
-                  }
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Popular Places Overlay */}
+          <PopularPlaces 
+            stones={topRated}
+            selectedStone={currentSelectedStone}
+            onStoneHover={handleStoneHover}
+          />
         </div>
       </main>
     </div>
