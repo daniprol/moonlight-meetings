@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useCallback } from 'react';
+import { useLocation, useNavigate, useBlocker } from 'react-router-dom';
 
 interface UseNavigationGuardProps {
   shouldBlock: boolean;
@@ -18,6 +18,27 @@ export const useNavigationGuard = ({
   const navigate = useNavigate();
   const nextLocationRef = useRef<string | null>(null);
 
+  // Block React Router navigation
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      shouldBlock && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  // Handle blocked navigation
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      const confirmed = window.confirm(`${confirmationTitle}\n\n${confirmationMessage}`);
+      
+      if (confirmed) {
+        onConfirm?.();
+        blocker.proceed();
+      } else {
+        blocker.reset();
+      }
+    }
+  }, [blocker, confirmationTitle, confirmationMessage, onConfirm]);
+
+  // Handle browser navigation (refresh, close tab)
   useEffect(() => {
     if (!shouldBlock) return;
 
@@ -34,21 +55,14 @@ export const useNavigationGuard = ({
     };
   }, [shouldBlock, confirmationMessage]);
 
-  const blockNavigation = (targetPath: string) => {
+  const blockNavigation = useCallback((targetPath: string) => {
     if (!shouldBlock) return false;
     
     nextLocationRef.current = targetPath;
     
-    // Show confirmation dialog
-    const confirmed = window.confirm(`${confirmationTitle}\n\n${confirmationMessage}`);
-    
-    if (confirmed) {
-      onConfirm?.();
-      return false; // Allow navigation
-    }
-    
-    return true; // Block navigation
-  };
+    // This is now handled by the useBlocker hook above
+    return shouldBlock;
+  }, [shouldBlock]);
 
   return { blockNavigation };
 };
