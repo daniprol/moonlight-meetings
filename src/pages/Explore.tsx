@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
+import StoneImage from '@/components/ui/StoneImage';
 
 export default function Explore() {
   const { user } = useAuth();
@@ -97,14 +98,24 @@ export default function Explore() {
                   {stones.map((s) => (
                     <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl cursor-pointer" onClick={() => navigate(`/stone/${s.id}`)}>
                       <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold text-foreground">{s.name}</h3>
-                          <div className="flex items-center gap-1 text-sm">
-                            <span className="text-primary">★</span>
-                            <span className="text-foreground/70">{s.average_rating?.toFixed(1) || '0.0'}</span>
+                        <div className="flex gap-3">
+                          <StoneImage 
+                            stoneId={s.id} 
+                            stoneName={s.name} 
+                            thumbnailPath={s.thumbnail_path}
+                            size="md"
+                          />
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="font-semibold text-foreground">{s.name}</h3>
+                              <div className="flex items-center gap-1 text-sm">
+                                <span className="text-primary">★</span>
+                                <span className="text-foreground/70">{s.average_rating?.toFixed(1) || '0.0'}</span>
+                              </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{s.address_text || s.description}</p>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground">{s.address_text || s.description}</p>
                       </div>
                     </Card>
                   ))}
@@ -121,11 +132,20 @@ export default function Explore() {
               <div className="grid grid-cols-2 gap-4">
                 {topRated.map((s) => (
                   <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl group cursor-pointer" onClick={() => navigate(`/stone/${s.id}`)}>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{s.name}</h3>
-                      <div className="flex items-center gap-1">
-                        <span className="text-primary text-sm">★</span>
-                        <span className="text-sm text-foreground/70">{s.average_rating?.toFixed(1) || '0.0'}</span>
+                    <div className="p-4 space-y-3">
+                      <StoneImage 
+                        stoneId={s.id} 
+                        stoneName={s.name} 
+                        thumbnailPath={s.thumbnail_path}
+                        size="lg"
+                        className="mx-auto"
+                      />
+                      <div className="text-center">
+                        <h3 className="font-semibold text-foreground mb-1 line-clamp-2">{s.name}</h3>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="text-primary text-sm">★</span>
+                          <span className="text-sm text-foreground/70">{s.average_rating?.toFixed(1) || '0.0'}</span>
+                        </div>
                       </div>
                     </div>
                   </Card>

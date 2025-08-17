@@ -53,6 +53,9 @@ export type Database = {
           id: string
           stone_id: string
           storage_path: string
+          thumbnail_height: number | null
+          thumbnail_path: string | null
+          thumbnail_width: number | null
           uploader_id: string
         }
         Insert: {
@@ -60,6 +63,9 @@ export type Database = {
           id?: string
           stone_id: string
           storage_path: string
+          thumbnail_height?: number | null
+          thumbnail_path?: string | null
+          thumbnail_width?: number | null
           uploader_id: string
         }
         Update: {
@@ -67,6 +73,9 @@ export type Database = {
           id?: string
           stone_id?: string
           storage_path?: string
+          thumbnail_height?: number | null
+          thumbnail_path?: string | null
+          thumbnail_width?: number | null
           uploader_id?: string
         }
         Relationships: [

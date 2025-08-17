@@ -8,6 +8,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
+import StoneImage from '@/components/ui/StoneImage';
 
 export default function MyStones() {
   const { user } = useAuth();
@@ -69,8 +70,18 @@ export default function MyStones() {
                   {myStones.map((s) => (
                     <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl cursor-pointer" onClick={() => navigate(`/stone/${s.id}`)}>
                       <div className="p-4">
-                        <h3 className="font-semibold text-foreground mb-2">{s.name}</h3>
-                        <p className="text-sm text-muted-foreground">{s.address_text || s.description}</p>
+                        <div className="flex gap-3">
+                          <StoneImage 
+                            stoneId={s.id} 
+                            stoneName={s.name} 
+                            thumbnailPath={s.thumbnail_path}
+                            size="md"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-foreground mb-2">{s.name}</h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{s.address_text || s.description}</p>
+                          </div>
+                        </div>
                       </div>
                     </Card>
                   ))}

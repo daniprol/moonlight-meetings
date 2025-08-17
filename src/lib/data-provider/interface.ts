@@ -11,6 +11,7 @@ export interface Stone {
   average_rating: number;
   created_at: string;
   updated_at: string;
+  thumbnail_path?: string | null; // First available thumbnail
 }
 
 export interface NewStone {
