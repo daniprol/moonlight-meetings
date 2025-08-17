@@ -19,43 +19,58 @@ const MapMarkers: React.FC<{ stones: Stone[]; onStoneSelect: (stone: Stone) => v
 }) => {
   const map = useMap();
   
-  // Only render markers when map is ready
-  if (!map) return null;
+  // Only render markers when map is ready and properly initialized
+  if (!map || !map.getDiv) return null;
 
   // Filter stones that have valid coordinates
   const markersData = stones.filter(stone => 
-    stone.latitude && stone.longitude
+    stone.latitude && stone.longitude && 
+    typeof stone.latitude === 'number' && 
+    typeof stone.longitude === 'number'
   );
 
-  return (
-    <>
-      {markersData.map((stone) => {
-        const isSelected = selectedStone?.id === stone.id;
-        return (
-          <AdvancedMarker
-            key={stone.id}
-            position={{ lat: stone.latitude!, lng: stone.longitude! }}
-            onClick={() => onStoneSelect(stone)}
-            title={stone.name}
-          >
-            <div className={`bg-background text-foreground px-3 py-2 rounded-lg shadow-lg border cursor-pointer transition-all duration-200 min-w-0 max-w-48 ${
-              isSelected 
-                ? 'border-primary scale-110 shadow-xl ring-2 ring-primary/20' 
-                : 'border-border hover:scale-105 hover:shadow-xl'
-            }`}>
-              <div className="text-xs font-semibold truncate">{stone.name}</div>
-              {stone.average_rating > 0 && (
-                <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                  <span>★</span>
-                  <span>{stone.average_rating.toFixed(1)}</span>
-                </div>
-              )}
-            </div>
-          </AdvancedMarker>
-        );
-      })}
-    </>
-  );
+  // Add error boundary protection for marker rendering
+  try {
+    return (
+      <>
+        {markersData.map((stone) => {
+          const isSelected = selectedStone?.id === stone.id;
+          
+          // Validate coordinates before creating marker
+          const lat = Number(stone.latitude);
+          const lng = Number(stone.longitude);
+          
+          if (isNaN(lat) || isNaN(lng)) return null;
+          
+          return (
+            <AdvancedMarker
+              key={stone.id}
+              position={{ lat, lng }}
+              onClick={() => onStoneSelect(stone)}
+              title={stone.name}
+            >
+              <div className={`bg-background text-foreground px-3 py-2 rounded-lg shadow-lg border cursor-pointer transition-all duration-200 min-w-0 max-w-48 ${
+                isSelected 
+                  ? 'border-primary scale-110 shadow-xl ring-2 ring-primary/20' 
+                  : 'border-border hover:scale-105 hover:shadow-xl'
+              }`}>
+                <div className="text-xs font-semibold truncate">{stone.name}</div>
+                {stone.average_rating > 0 && (
+                  <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                    <span>★</span>
+                    <span>{stone.average_rating.toFixed(1)}</span>
+                  </div>
+                )}
+              </div>
+            </AdvancedMarker>
+          );
+        })}
+      </>
+    );
+  } catch (error) {
+    console.warn('Error rendering map markers:', error);
+    return null;
+  }
 };
 
 const ExploreMap: React.FC<ExploreMapProps> = ({
