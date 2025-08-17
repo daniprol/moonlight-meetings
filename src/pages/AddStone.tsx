@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import EmbeddedMap, { MapMarker } from '@/components/ui/EmbeddedMap';
+import EmbeddedMap from '@/components/ui/EmbeddedMap';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';

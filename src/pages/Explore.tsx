@@ -7,11 +7,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { StarField } from '@/components/StarField';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useIntl } from 'react-intl';
+import { useNavigate } from 'react-router-dom';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
 export default function Explore() {
   const { user } = useAuth();
   const intl = useIntl();
+  const navigate = useNavigate();
   const [q, setQ] = useState('');
   const [stones, setStones] = useState<any[]>([]);
   const [topRated, setTopRated] = useState<any[]>([]);
@@ -86,14 +88,14 @@ export default function Explore() {
           {stones.length > 0 ? (
             <div className="space-y-6">
               <div className="bg-card rounded-2xl p-1 shadow-sm border border-border/50">
-                <EmbeddedMap markers={markers} className="w-full h-[350px] rounded-xl" />
+                <EmbeddedMap className="w-full h-[350px] rounded-xl" />
               </div>
               
               <div className="space-y-3">
                 <h2 className="text-lg font-semibold text-foreground">{intl.formatMessage({ id: 'explore.searchResults' })}</h2>
                 <div className="space-y-3 max-h-[400px] overflow-y-auto">
                   {stones.map((s) => (
-                    <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl">
+                    <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl cursor-pointer" onClick={() => navigate(`/stone/${s.id}`)}>
                       <div className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <h3 className="font-semibold text-foreground">{s.name}</h3>
@@ -118,7 +120,7 @@ export default function Explore() {
               
               <div className="grid grid-cols-2 gap-4">
                 {topRated.map((s) => (
-                  <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl group">
+                  <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl group cursor-pointer" onClick={() => navigate(`/stone/${s.id}`)}>
                     <div className="p-4">
                       <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{s.name}</h3>
                       <div className="flex items-center gap-1">

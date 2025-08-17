@@ -13,6 +13,7 @@ import Explore from "./pages/Explore";
 import MyStones from "./pages/MyStones";
 import AddStone from "./pages/AddStone";
 import Profile from "./pages/Profile";
+import Stone from "./pages/Stone";
 // import DevRoleSelector from "@/components/DevRoleSelector";
 import BottomTabBar from "@/components/navigation/BottomTabBar";
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/my-stones" element={<MyStones />} />
                 <Route path="/add-stone" element={<AddStone />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/stone/:id" element={<Stone />} />
                 <Route path="/auth" element={<Auth />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
