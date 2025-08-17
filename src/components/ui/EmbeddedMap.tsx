@@ -1,88 +1,68 @@
-/// <reference types="google.maps" />
-import React, { useEffect, useRef } from 'react';
-import { Loader } from '@googlemaps/js-api-loader';
+import React from 'react';
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
+// Exporting MapMarker so other components can use the type
 export interface MapMarker {
   id: string;
-  position: google.maps.LatLngLiteral;
+  position: { lat: number; lng: number };
   title?: string;
 }
 
 interface EmbeddedMapProps {
-  apiKey?: string; // optional, will read from localStorage if not provided
-  center?: google.maps.LatLngLiteral;
+  center?: { lat: number; lng: number } | null;
   zoom?: number;
   markers?: MapMarker[];
   onMarkerClick?: (id: string) => void;
+  onMapClick?: (e: google.maps.MapMouseEvent) => void; // Prop to handle map clicks
   className?: string;
 }
 
 const EmbeddedMap: React.FC<EmbeddedMapProps> = ({
-  apiKey,
-  center = { lat: 40.4168, lng: -3.7038 },
+  center,
   zoom = 5,
   markers = [],
   onMarkerClick,
+  onMapClick, // Handler for map clicks
   className,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRefs = useRef<Record<string, google.maps.Marker>>({});
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  useEffect(() => {
-    const key = apiKey || localStorage.getItem('GOOGLE_MAPS_API_KEY') || '';
-    if (!key) return; // Ask user to set it in UI
+  // Use a default center if the provided center is null or undefined
+  const mapCenter = center || { lat: 40.4168, lng: -3.7038 };
 
-    const loader = new Loader({ apiKey: key, version: 'weekly' });
-    let cancelled = false;
+  if (!apiKey) {
+    return (
+      <div className={className || 'w-full h-[60vh] rounded-lg shadow-moonlight flex items-center justify-center bg-gray-200'}>
+        <p>Google Maps API Key is not configured. Please set VITE_GOOGLE_MAPS_API_KEY in your .env file.</p>
+      </div>
+    );
+  }
 
-    loader.load().then(() => {
-      if (cancelled || !containerRef.current) return;
-      mapRef.current = new google.maps.Map(containerRef.current, {
-        center,
-        zoom,
-        mapId: 'DEMO_MAP_ID',
-        disableDefaultUI: false,
-        backgroundColor: '#000',
-      });
-
-      // Add markers
-      markers.forEach((m) => {
-        const marker = new google.maps.Marker({
-          position: m.position,
-          map: mapRef.current!,
-          title: m.title,
-        });
-        if (onMarkerClick) {
-          marker.addListener('click', () => onMarkerClick(m.id));
-        }
-        markerRefs.current[m.id] = marker;
-      });
-    });
-
-    return () => {
-      cancelled = true;
-      Object.values(markerRefs.current).forEach((mk) => mk.setMap(null));
-      markerRefs.current = {};
-    };
-  }, [apiKey]);
-
-  useEffect(() => {
-    // Update markers on change
-    if (!mapRef.current) return;
-
-    // Remove all existing markers
-    Object.values(markerRefs.current).forEach((mk) => mk.setMap(null));
-    markerRefs.current = {};
-
-    markers.forEach((m) => {
-      const marker = new google.maps.Marker({ position: m.position, map: mapRef.current!, title: m.title });
-      if (onMarkerClick) marker.addListener('click', () => onMarkerClick(m.id));
-      markerRefs.current[m.id] = marker;
-    });
-  }, [markers]);
-
-  return <div ref={containerRef} className={className || 'w-full h-[60vh] rounded-lg shadow-moonlight'} />;
+  return (
+    <APIProvider apiKey={apiKey}>
+      <div className={className || 'w-full h-[60vh] rounded-lg shadow-moonlight'}>
+        <Map
+          key={`${mapCenter.lat}-${mapCenter.lng}-${zoom}`} // Force re-render on center/zoom change
+          center={mapCenter}
+          zoom={zoom}
+          mapId={'DEMO_MAP_ID'}
+          disableDefaultUI={false}
+          gestureHandling={'greedy'}
+          style={{ width: '100%', height: '100%', borderRadius: '0.5rem' }}
+          onClick={onMapClick} // Attach the click handler here
+        >
+          {markers.map((m) => (
+            <Marker
+              key={m.id}
+              position={m.position}
+              title={m.title}
+              onClick={() => onMarkerClick && onMarkerClick(m.id)}
+            />
+          ))}
+        </Map>
+      </div>
+    </APIProvider>
+  );
 };
 
 export default EmbeddedMap;
