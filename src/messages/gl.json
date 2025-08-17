@@ -71,5 +71,34 @@
   "profile.placesAdded": "Lugares Engadidos",
   "profile.reviews": "Reseñas",
   "profile.favorites": "Favoritos",
-  "profile.exploring": "Explorando lugares máxicos"
+  "profile.exploring": "Explorando lugares máxicos",
+  
+  "form.validation.latitudeRequired": "A latitude é obrigatoria",
+  "form.validation.latitudeInvalid": "A latitude debe ser un número",
+  "form.validation.latitudeRange": "A latitude debe estar entre -90 e 90",
+  "form.validation.longitudeRequired": "A lonxitude é obrigatoria",
+  "form.validation.longitudeInvalid": "A lonxitude debe ser un número",
+  "form.validation.longitudeRange": "A lonxitude debe estar entre -180 e 180",
+  "form.validation.nameRequired": "O nome do lugar é obrigatorio",
+  "form.validation.nameMinLength": "O nome do lugar debe ter polo menos 3 caracteres",
+  "form.validation.nameMaxLength": "O nome do lugar debe ter menos de 100 caracteres",
+  "form.validation.descriptionMaxLength": "A descrición debe ter menos de 500 caracteres",
+  "form.validation.addressMaxLength": "O enderezo debe ter menos de 200 caracteres",
+  
+  "form.description.placeName": "Escolle un nome descriptivo para este lugar (3-100 caracteres)",
+  "form.description.description": "Descrición opcional (máx. 500 caracteres)",
+  "form.description.address": "Enderezo opcional ou descrición de localización (máx. 200 caracteres)",
+  "form.description.photos": "Sube fotos para mostrar este lugar (opcional)",
+  
+  "form.confirmation.title": "Cambios Sen Gardar",
+  "form.confirmation.message": "Tes cambios sen gardar. ¿Estás seguro de que queres saír desta páxina?",
+  "form.confirmation.leave": "Saír da Páxina",
+  "form.confirmation.stay": "Permanecer na Páxina",
+  
+  "form.status.creating": "Creando...",
+  "form.status.success": "¡Éxito!",
+  "form.status.successMessage": "Lugar engadido exitosamente",
+  "form.status.error": "Erro",
+  "form.status.errorMessage": "Erro ao engadir o lugar. Por favor, inténtao de novo.",
+  "form.status.loginRequired": "Debes estar conectado para engadir un lugar"
 }

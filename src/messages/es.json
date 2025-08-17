@@ -71,5 +71,34 @@
   "profile.placesAdded": "Lugares Añadidos",
   "profile.reviews": "Reseñas",
   "profile.favorites": "Favoritos",
-  "profile.exploring": "Explorando lugares mágicos"
+  "profile.exploring": "Explorando lugares mágicos",
+  
+  "form.validation.latitudeRequired": "La latitud es obligatoria",
+  "form.validation.latitudeInvalid": "La latitud debe ser un número",
+  "form.validation.latitudeRange": "La latitud debe estar entre -90 y 90",
+  "form.validation.longitudeRequired": "La longitud es obligatoria",
+  "form.validation.longitudeInvalid": "La longitud debe ser un número",
+  "form.validation.longitudeRange": "La longitud debe estar entre -180 y 180",
+  "form.validation.nameRequired": "El nombre del lugar es obligatorio",
+  "form.validation.nameMinLength": "El nombre del lugar debe tener al menos 3 caracteres",
+  "form.validation.nameMaxLength": "El nombre del lugar debe tener menos de 100 caracteres",
+  "form.validation.descriptionMaxLength": "La descripción debe tener menos de 500 caracteres",
+  "form.validation.addressMaxLength": "La dirección debe tener menos de 200 caracteres",
+  
+  "form.description.placeName": "Elige un nombre descriptivo para este lugar (3-100 caracteres)",
+  "form.description.description": "Descripción opcional (máx. 500 caracteres)",
+  "form.description.address": "Dirección opcional o descripción de ubicación (máx. 200 caracteres)",
+  "form.description.photos": "Sube fotos para mostrar este lugar (opcional)",
+  
+  "form.confirmation.title": "Cambios Sin Guardar",
+  "form.confirmation.message": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir de esta página?",
+  "form.confirmation.leave": "Salir de la Página",
+  "form.confirmation.stay": "Permanecer en la Página",
+  
+  "form.status.creating": "Creando...",
+  "form.status.success": "¡Éxito!",
+  "form.status.successMessage": "Lugar añadido exitosamente",
+  "form.status.error": "Error",
+  "form.status.errorMessage": "Error al añadir el lugar. Por favor, inténtalo de nuevo.",
+  "form.status.loginRequired": "Debes estar conectado para añadir un lugar"
 }

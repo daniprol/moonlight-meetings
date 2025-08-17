@@ -71,5 +71,34 @@
   "profile.placesAdded": "Places Added",
   "profile.reviews": "Reviews", 
   "profile.favorites": "Favorites",
-  "profile.exploring": "Exploring magical places"
+  "profile.exploring": "Exploring magical places",
+  
+  "form.validation.latitudeRequired": "Latitude is required",
+  "form.validation.latitudeInvalid": "Latitude must be a number",
+  "form.validation.latitudeRange": "Latitude must be between -90 and 90",
+  "form.validation.longitudeRequired": "Longitude is required",
+  "form.validation.longitudeInvalid": "Longitude must be a number", 
+  "form.validation.longitudeRange": "Longitude must be between -180 and 180",
+  "form.validation.nameRequired": "Place name is required",
+  "form.validation.nameMinLength": "Place name must be at least 3 characters",
+  "form.validation.nameMaxLength": "Place name must be less than 100 characters",
+  "form.validation.descriptionMaxLength": "Description must be less than 500 characters",
+  "form.validation.addressMaxLength": "Address must be less than 200 characters",
+  
+  "form.description.placeName": "Choose a descriptive name for this place (3-100 characters)",
+  "form.description.description": "Optional description (max 500 characters)",
+  "form.description.address": "Optional address or location description (max 200 characters)",
+  "form.description.photos": "Upload photos to showcase this place (optional)",
+  
+  "form.confirmation.title": "Unsaved Changes",
+  "form.confirmation.message": "You have unsaved changes. Are you sure you want to leave this page?",
+  "form.confirmation.leave": "Leave Page",
+  "form.confirmation.stay": "Stay on Page",
+  
+  "form.status.creating": "Creating...",
+  "form.status.success": "Success!",
+  "form.status.successMessage": "Place added successfully",
+  "form.status.error": "Error",
+  "form.status.errorMessage": "Failed to add place. Please try again.",
+  "form.status.loginRequired": "You must be logged in to add a place"
 }

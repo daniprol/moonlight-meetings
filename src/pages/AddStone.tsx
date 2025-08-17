@@ -22,25 +22,35 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { NavigationGuard } from '@/components/forms/NavigationGuard';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 
-// Form validation schema
-const formSchema = z.object({
+// Form validation schema with internationalized messages
+const createFormSchema = (intl: any) => z.object({
   latitude: z.number({
-    required_error: "Latitude is required",
-    invalid_type_error: "Latitude must be a number",
-  }).min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"),
+    required_error: intl.formatMessage({ id: 'form.validation.latitudeRequired' }),
+    invalid_type_error: intl.formatMessage({ id: 'form.validation.latitudeInvalid' }),
+  }).min(-90, intl.formatMessage({ id: 'form.validation.latitudeRange' }))
+    .max(90, intl.formatMessage({ id: 'form.validation.latitudeRange' })),
   longitude: z.number({
-    required_error: "Longitude is required", 
-    invalid_type_error: "Longitude must be a number",
-  }).min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"),
-  name: z.string().min(1, "Place name is required").min(3, "Place name must be at least 3 characters").max(100, "Place name must be less than 100 characters"),
-  description: z.string().max(500, "Description must be less than 500 characters").optional(),
-  address: z.string().max(200, "Address must be less than 200 characters").optional(),
+    required_error: intl.formatMessage({ id: 'form.validation.longitudeRequired' }), 
+    invalid_type_error: intl.formatMessage({ id: 'form.validation.longitudeInvalid' }),
+  }).min(-180, intl.formatMessage({ id: 'form.validation.longitudeRange' }))
+    .max(180, intl.formatMessage({ id: 'form.validation.longitudeRange' })),
+  name: z.string()
+    .min(1, intl.formatMessage({ id: 'form.validation.nameRequired' }))
+    .min(3, intl.formatMessage({ id: 'form.validation.nameMinLength' }))
+    .max(100, intl.formatMessage({ id: 'form.validation.nameMaxLength' })),
+  description: z.string()
+    .max(500, intl.formatMessage({ id: 'form.validation.descriptionMaxLength' }))
+    .optional(),
+  address: z.string()
+    .max(200, intl.formatMessage({ id: 'form.validation.addressMaxLength' }))
+    .optional(),
   photos: z.instanceof(FileList).optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 export default function AddStone() {
   const { user } = useAuth();
@@ -48,6 +58,9 @@ export default function AddStone() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Create schema with current intl instance
+  const formSchema = createFormSchema(intl);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -60,6 +73,9 @@ export default function AddStone() {
     },
   });
 
+  // Check if form has been modified (for navigation guard)
+  const isFormDirty = form.formState.isDirty && step > 1;
+
   useEffect(() => {
     document.title = `${intl.formatMessage({ id: 'page.addPlace' })} | ${intl.formatMessage({ id: 'title' })}`;
   }, [intl]);
@@ -69,8 +85,8 @@ export default function AddStone() {
   const onSubmit = async (values: FormValues) => {
     if (!user) {
       toast({
-        title: "Error",
-        description: "You must be logged in to add a place",
+        title: intl.formatMessage({ id: 'form.status.error' }),
+        description: intl.formatMessage({ id: 'form.status.loginRequired' }),
         variant: "destructive",
       });
       return;
@@ -93,8 +109,8 @@ export default function AddStone() {
       );
 
       toast({
-        title: "Success!",
-        description: "Place added successfully",
+        title: intl.formatMessage({ id: 'form.status.success' }),
+        description: intl.formatMessage({ id: 'form.status.successMessage' }),
       });
 
       // Reset form and go back to step 1
@@ -102,8 +118,8 @@ export default function AddStone() {
       setStep(1);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add place. Please try again.",
+        title: intl.formatMessage({ id: 'form.status.error' }),
+        description: intl.formatMessage({ id: 'form.status.errorMessage' }),
         variant: "destructive",
       });
     } finally {
@@ -133,6 +149,17 @@ export default function AddStone() {
   return (
     <div className="min-h-screen bg-background">
       <StarField />
+      
+      {/* Navigation Guard */}
+      <NavigationGuard
+        shouldBlock={isFormDirty}
+        confirmationTitle={intl.formatMessage({ id: 'form.confirmation.title' })}
+        confirmationMessage={intl.formatMessage({ id: 'form.confirmation.message' })}
+        onNavigationAllowed={() => {
+          form.reset();
+          setStep(1);
+        }}
+      />
       
       {/* Subtle background pattern */}
       <div 
@@ -255,7 +282,7 @@ export default function AddStone() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Choose a descriptive name for this place (3-100 characters)
+                            {intl.formatMessage({ id: 'form.description.placeName' })}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -276,7 +303,7 @@ export default function AddStone() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Optional description (max 500 characters)
+                            {intl.formatMessage({ id: 'form.description.description' })}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -297,7 +324,7 @@ export default function AddStone() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Optional address or location description (max 200 characters)
+                            {intl.formatMessage({ id: 'form.description.address' })}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -340,7 +367,7 @@ export default function AddStone() {
                               className="w-full text-sm text-foreground file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer"
                             />
                             <p className="text-xs text-muted-foreground mt-2">
-                              Upload photos to showcase this place (optional)
+                              {intl.formatMessage({ id: 'form.description.photos' })}
                             </p>
                           </div>
                         </FormControl>
@@ -367,7 +394,10 @@ export default function AddStone() {
                       {intl.formatMessage({ id: 'addStone.back' })}
                     </Button>
                     <Button type="submit" disabled={isSubmitting} className="h-12 flex-1">
-                      {isSubmitting ? 'Creating...' : intl.formatMessage({ id: 'addStone.createPlace' })}
+                      {isSubmitting 
+                        ? intl.formatMessage({ id: 'form.status.creating' }) 
+                        : intl.formatMessage({ id: 'addStone.createPlace' })
+                      }
                     </Button>
                   </div>
                 </div>
