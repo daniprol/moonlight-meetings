@@ -1,45 +1,127 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface UseBottomSheetProps {
-  minHeight?: number; // percentage
-  maxHeight?: number; // percentage
-  initialHeight?: number; // percentage
+  minHeight: number; // Percentage of viewport
+  maxHeight: number; // Percentage of viewport
+  initialHeight: number; // Percentage of viewport
 }
 
-export function useBottomSheet({
-  minHeight = 40,
-  maxHeight = 80,
-  initialHeight = 40
-}: UseBottomSheetProps = {}) {
+export function useBottomSheet({ minHeight, maxHeight, initialHeight }: UseBottomSheetProps) {
   const [height, setHeight] = useState(initialHeight);
   const [isDragging, setIsDragging] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const startY = useRef(0);
-  const startHeight = useRef(0);
+  const dragStartY = useRef<number>(0);
+  const dragStartHeight = useRef<number>(0);
+  const lastScrollY = useRef<number>(0);
+  const scrollTimeout = useRef<NodeJS.Timeout>();
 
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (!containerRef.current) return;
+  // Snap to closest point
+  const snapToPoint = useCallback((currentHeight: number) => {
+    const midPoint = (minHeight + maxHeight) / 2;
+    const targetHeight = currentHeight > midPoint ? maxHeight : minHeight;
+    setHeight(targetHeight);
+  }, [minHeight, maxHeight]);
+
+  // Expand to maximum height
+  const expandToMax = useCallback(() => {
+    setHeight(maxHeight);
+  }, [maxHeight]);
+
+  // Collapse to minimum height
+  const collapseToMin = useCallback(() => {
+    setHeight(minHeight);
+  }, [minHeight]);
+
+  // Handle scroll events for expansion/contraction
+  const handleScroll = useCallback((e: WheelEvent | TouchEvent) => {
+    if (isDragging) return;
+
+    const isExpanded = height >= maxHeight * 0.9; // Consider expanded when near max
+    const isCollapsed = height <= minHeight * 1.1; // Consider collapsed when near min
     
-    const touch = e.touches[0];
-    startY.current = touch.clientY;
-    startHeight.current = height;
+    let deltaY = 0;
+    
+    if ('deltaY' in e) {
+      // Mouse wheel
+      deltaY = e.deltaY;
+    } else {
+      // Touch event
+      const touch = e.touches[0] || e.changedTouches[0];
+      if (touch) {
+        const currentY = touch.clientY;
+        deltaY = currentY - lastScrollY.current;
+        lastScrollY.current = currentY;
+      }
+    }
+
+    // Scrolling up (negative deltaY) when collapsed -> expand
+    if (deltaY < 0 && isCollapsed) {
+      e.preventDefault();
+      expandToMax();
+    }
+    // Scrolling down (positive deltaY) when expanded -> check if at top of content
+    else if (deltaY > 0 && isExpanded) {
+      const scrollArea = containerRef.current?.querySelector('[data-scroll-area]') as HTMLElement;
+      if (scrollArea && scrollArea.scrollTop === 0) {
+        e.preventDefault();
+        collapseToMin();
+      }
+    }
+
+    setIsScrolling(true);
+    clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(() => setIsScrolling(false), 150);
+  }, [height, maxHeight, minHeight, isDragging, expandToMax, collapseToMin]);
+
+  // Mouse drag handlers
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    if (!(e.target as HTMLElement)?.hasAttribute('data-drag-handle')) return;
+    
     setIsDragging(true);
+    dragStartY.current = e.clientY;
+    dragStartHeight.current = height;
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [height]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    const deltaY = dragStartY.current - e.clientY;
+    const deltaPercent = (deltaY / window.innerHeight) * 100;
+    const newHeight = Math.max(minHeight, Math.min(maxHeight, dragStartHeight.current + deltaPercent));
+    
+    setHeight(newHeight);
+  }, [isDragging, minHeight, maxHeight]);
+
+  const handleMouseUp = useCallback(() => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    snapToPoint(height);
+    
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }, [isDragging, height, snapToPoint]);
+
+  // Touch drag handlers
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (!(e.target as HTMLElement)?.hasAttribute('data-drag-handle')) return;
+    
+    setIsDragging(true);
+    dragStartY.current = e.touches[0].clientY;
+    dragStartHeight.current = height;
+    lastScrollY.current = e.touches[0].clientY;
   }, [height]);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging) return;
-    e.preventDefault();
-
-    const touch = e.touches[0];
-    const deltaY = startY.current - touch.clientY;
-    const viewportHeight = window.innerHeight;
-    const deltaPercent = (deltaY / viewportHeight) * 100;
     
-    const newHeight = Math.max(
-      minHeight,
-      Math.min(maxHeight, startHeight.current + deltaPercent)
-    );
+    const deltaY = dragStartY.current - e.touches[0].clientY;
+    const deltaPercent = (deltaY / window.innerHeight) * 100;
+    const newHeight = Math.max(minHeight, Math.min(maxHeight, dragStartHeight.current + deltaPercent));
     
     setHeight(newHeight);
   }, [isDragging, minHeight, maxHeight]);
@@ -48,70 +130,40 @@ export function useBottomSheet({
     if (!isDragging) return;
     
     setIsDragging(false);
-    
-    // Snap to closest position
-    const midPoint = (minHeight + maxHeight) / 2;
-    const targetHeight = height > midPoint ? maxHeight : minHeight;
-    setHeight(targetHeight);
-  }, [isDragging, height, minHeight, maxHeight]);
+    snapToPoint(height);
+  }, [isDragging, height, snapToPoint]);
 
-  const handleScroll = useCallback((e: Event) => {
-    const target = e.target as HTMLElement;
-    if (!target || !containerRef.current) return;
-
-    const scrollTop = target.scrollTop;
-    const isAtTop = scrollTop === 0;
-    
-    if (isAtTop && height < maxHeight) {
-      setIsScrolling(true);
-      setHeight(maxHeight);
-      
-      // Reset scroll after animation
-      setTimeout(() => {
-        setIsScrolling(false);
-      }, 300);
-    }
-  }, [height, maxHeight]);
-
-  const expandToMax = useCallback(() => {
-    setHeight(maxHeight);
-  }, [maxHeight]);
-
-  const collapseToMin = useCallback(() => {
-    setHeight(minHeight);
-  }, [minHeight]);
-
+  // Set up event listeners
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Add touch event listeners to the drag handle
-    const dragHandle = container.querySelector('[data-drag-handle]') as HTMLElement;
-    if (dragHandle) {
-      dragHandle.addEventListener('touchstart', handleTouchStart, { passive: false });
-    }
-
-    // Add scroll listener to the scrollable content
-    const scrollArea = container.querySelector('[data-scroll-area]') as HTMLElement;
-    if (scrollArea) {
-      scrollArea.addEventListener('scroll', handleScroll, { passive: true });
-    }
-
-    // Global touch move and end listeners
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    // Mouse events
+    container.addEventListener('mousedown', handleMouseDown);
+    
+    // Touch events
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd);
+    
+    // Scroll events for expansion/contraction
+    container.addEventListener('wheel', handleScroll, { passive: false });
+    container.addEventListener('touchmove', handleScroll, { passive: false });
 
     return () => {
-      if (dragHandle) {
-        dragHandle.removeEventListener('touchstart', handleTouchStart);
-      }
-      if (scrollArea) {
-        scrollArea.removeEventListener('scroll', handleScroll);
-      }
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('mousedown', handleMouseDown);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('wheel', handleScroll);
+      container.removeEventListener('touchmove', handleScroll);
+      
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      
+      clearTimeout(scrollTimeout.current);
     };
-  }, [handleTouchStart, handleTouchMove, handleTouchEnd, handleScroll]);
+  }, [handleMouseDown, handleTouchStart, handleTouchMove, handleTouchEnd, handleScroll, handleMouseMove, handleMouseUp]);
 
   return {
     height,
@@ -120,6 +172,6 @@ export function useBottomSheet({
     containerRef,
     expandToMax,
     collapseToMin,
-    setHeight
+    snapToPoint: () => snapToPoint(height)
   };
 }

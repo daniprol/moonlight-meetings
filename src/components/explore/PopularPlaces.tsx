@@ -12,18 +12,20 @@ interface PopularPlacesProps {
   stones: Stone[];
   selectedStone?: Stone | null;
   onStoneHover?: (stone: Stone | null) => void;
+  onMapClick?: () => void;
 }
 
 const PopularPlaces: React.FC<PopularPlacesProps> = ({ 
   stones, 
   selectedStone, 
-  onStoneHover 
+  onStoneHover,
+  onMapClick
 }) => {
   const navigate = useNavigate();
   const intl = useIntl();
   const contentRef = useRef<HTMLDivElement>(null);
   
-  const { height, isDragging, isScrolling, containerRef, expandToMax } = useBottomSheet({
+  const { height, isDragging, isScrolling, containerRef, expandToMax, collapseToMin } = useBottomSheet({
     minHeight: 40, // 40% of viewport
     maxHeight: 80, // 80% of viewport
     initialHeight: 40
@@ -33,13 +35,19 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
 
   const isExpanded = height >= 75; // Consider expanded when >= 75% of max height
 
-  // Handle wheel scroll to expand panel
+  // Handle wheel scroll to expand/contract panel
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      const scrollArea = containerRef.current?.querySelector('[data-scroll-area]') as HTMLElement;
+      
       if (!isExpanded && e.deltaY < 0) {
         // Scrolling up when not expanded - expand the panel
         e.preventDefault();
         expandToMax();
+      } else if (isExpanded && e.deltaY > 0 && scrollArea?.scrollTop === 0) {
+        // Scrolling down when expanded and at top of content - collapse the panel
+        e.preventDefault();
+        collapseToMin();
       }
     };
 
@@ -50,11 +58,29 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
         container.removeEventListener('wheel', handleWheel);
       };
     }
-  }, [isExpanded, expandToMax, containerRef]);
+  }, [isExpanded, expandToMax, collapseToMin, containerRef]);
 
   const handleStoneClick = (stone: Stone) => {
     navigate(`/stone/${stone.id}`);
   };
+
+  // Listen for map clicks to collapse the bottom sheet
+  useEffect(() => {
+    const handleMapClickToCollapse = () => {
+      collapseToMin();
+    };
+
+    // Expose collapse function globally for map interaction
+    if (onMapClick) {
+      (window as any).__collapseBottomSheet = handleMapClickToCollapse;
+    }
+
+    return () => {
+      if ((window as any).__collapseBottomSheet) {
+        delete (window as any).__collapseBottomSheet;
+      }
+    };
+  }, [collapseToMin, onMapClick]);
 
   return (
     <div 

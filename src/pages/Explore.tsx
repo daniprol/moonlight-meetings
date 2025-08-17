@@ -34,6 +34,12 @@ export default function Explore() {
     setHoveredStone(stone);
   };
 
+  const handleMapClick = () => {
+    // When clicking on the map, collapse the bottom sheet and deselect stones
+    setSelectedStone(null);
+    setHoveredStone(null);
+  };
+
   const currentSelectedStone = selectedStone || hoveredStone;
 
   return (
@@ -66,17 +72,19 @@ export default function Explore() {
           <ExploreMap 
             stones={topRated}
             onStoneSelect={handleStoneSelect}
+            onMapClick={handleMapClick}
             selectedStone={currentSelectedStone}
             className="w-full h-full"
           />
         </div>
 
         {/* Popular Places Overlay - Draggable bottom sheet */}
-        <PopularPlaces 
-          stones={topRated}
-          selectedStone={currentSelectedStone}
-          onStoneHover={handleStoneHover}
-        />
+          <PopularPlaces 
+            stones={topRated}
+            selectedStone={currentSelectedStone}
+            onStoneHover={handleStoneHover}
+            onMapClick={handleMapClick}
+          />
       </main>
     </div>
   );

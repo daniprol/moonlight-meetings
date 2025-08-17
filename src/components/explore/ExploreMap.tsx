@@ -7,6 +7,7 @@ import StoneInfoWindow from './StoneInfoWindow';
 interface ExploreMapProps {
   stones: Stone[];
   onStoneSelect?: (stone: Stone | null) => void;
+  onMapClick?: () => void;
   selectedStone?: Stone | null;
   className?: string;
 }
@@ -76,6 +77,7 @@ const MapMarkers: React.FC<{ stones: Stone[]; onStoneSelect: (stone: Stone) => v
 const ExploreMap: React.FC<ExploreMapProps> = ({
   stones,
   onStoneSelect,
+  onMapClick,
   selectedStone,
   className = "w-full h-full",
 }) => {
@@ -86,6 +88,14 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
     setInternalSelectedStone(stone);
     onStoneSelect?.(stone);
   }, [onStoneSelect]);
+
+  const handleMapClick = useCallback(() => {
+    onMapClick?.();
+    // Also trigger bottom sheet collapse if available
+    if ((window as any).__collapseBottomSheet) {
+      (window as any).__collapseBottomSheet();
+    }
+  }, [onMapClick]);
 
   const handleInfoWindowClose = useCallback(() => {
     setInternalSelectedStone(null);
@@ -122,6 +132,7 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
           mapTypeControl={false}
           streetViewControl={false}
           fullscreenControl={false}
+          onClick={handleMapClick}
         >
           {/* Render markers after map is ready */}
           <MapMarkers 
