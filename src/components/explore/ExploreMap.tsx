@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
 import { O_GROVE_BOUNDS, O_GROVE_CENTER } from '@/lib/map-config';
 import { Stone } from '@/lib/data-provider/interface';
 import StoneInfoWindow from './StoneInfoWindow';
@@ -10,6 +10,53 @@ interface ExploreMapProps {
   selectedStone?: Stone | null;
   className?: string;
 }
+
+// Component to render markers after map is ready
+const MapMarkers: React.FC<{ stones: Stone[]; onStoneSelect: (stone: Stone) => void; selectedStone: Stone | null }> = ({
+  stones,
+  onStoneSelect,
+  selectedStone
+}) => {
+  const map = useMap();
+  
+  // Only render markers when map is ready
+  if (!map) return null;
+
+  // Filter stones that have valid coordinates
+  const markersData = stones.filter(stone => 
+    stone.latitude && stone.longitude
+  );
+
+  return (
+    <>
+      {markersData.map((stone) => {
+        const isSelected = selectedStone?.id === stone.id;
+        return (
+          <AdvancedMarker
+            key={stone.id}
+            position={{ lat: stone.latitude!, lng: stone.longitude! }}
+            onClick={() => onStoneSelect(stone)}
+            title={stone.name}
+          >
+            <div className={`bg-background text-foreground px-3 py-2 rounded-lg shadow-lg border cursor-pointer transition-all duration-200 min-w-0 max-w-48 ${
+              isSelected 
+                ? 'border-primary scale-110 shadow-xl ring-2 ring-primary/20' 
+                : 'border-border hover:scale-105 hover:shadow-xl'
+            }`}>
+              <div className="text-xs font-semibold truncate">{stone.name}</div>
+              {stone.average_rating > 0 && (
+                <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                  <span>★</span>
+                  <span>{stone.average_rating.toFixed(1)}</span>
+                </div>
+              )}
+            </div>
+          </AdvancedMarker>
+        );
+      })}
+    </>
+  );
+};
 
 const ExploreMap: React.FC<ExploreMapProps> = ({
   stones,
@@ -43,11 +90,6 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
     );
   }
 
-  // Filter stones that have valid coordinates
-  const markersData = stones.filter(stone => 
-    stone.latitude && stone.longitude
-  );
-
   return (
     <APIProvider apiKey={apiKey}>
       <div className={className}>
@@ -66,32 +108,12 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
           streetViewControl={false}
           fullscreenControl={false}
         >
-          {/* Render markers for each stone */}
-          {markersData.map((stone) => {
-            const isSelected = activeSelectedStone?.id === stone.id;
-            return (
-              <AdvancedMarker
-                key={stone.id}
-                position={{ lat: stone.latitude!, lng: stone.longitude! }}
-                onClick={() => handleMarkerClick(stone)}
-                title={stone.name}
-              >
-                <div className={`bg-background text-foreground px-3 py-2 rounded-lg shadow-lg border cursor-pointer transition-all duration-200 min-w-0 max-w-48 ${
-                  isSelected 
-                    ? 'border-primary scale-110 shadow-xl ring-2 ring-primary/20' 
-                    : 'border-border hover:scale-105 hover:shadow-xl'
-                }`}>
-                  <div className="text-xs font-semibold truncate">{stone.name}</div>
-                  {stone.average_rating > 0 && (
-                    <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                      <span>★</span>
-                      <span>{stone.average_rating.toFixed(1)}</span>
-                    </div>
-                  )}
-                </div>
-              </AdvancedMarker>
-            );
-          })}
+          {/* Render markers after map is ready */}
+          <MapMarkers 
+            stones={stones}
+            onStoneSelect={handleMarkerClick}
+            selectedStone={activeSelectedStone}
+          />
 
           {/* Info Window for selected stone */}
           {activeSelectedStone && (
