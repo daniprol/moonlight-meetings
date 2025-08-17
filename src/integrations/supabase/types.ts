@@ -241,6 +241,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      profile_belongs_to_current_user: {
+        Args: { p_profile_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "normal" | "editor" | "admin"

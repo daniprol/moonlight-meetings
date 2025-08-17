@@ -11,14 +11,14 @@ import starryBackground from '@/assets/starry-sky-pattern.jpg';
 export default function MyStones() {
   const { user } = useAuth();
   const intl = useIntl();
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const [myStones, setMyStones] = useState<any[]>([]);
 
   useEffect(() => {
     document.title = `${intl.formatMessage({ id: 'page.myCollection' })} | ${intl.formatMessage({ id: 'title' })}`;
   }, [intl]);
 
   useEffect(() => {
-    if (user) dataProvider.getFavoriteStones(user.id).then(setFavorites);
+    if (user) dataProvider.getStonesByCreator(user.id).then(setMyStones);
   }, [user]);
 
   return (
@@ -45,26 +45,26 @@ export default function MyStones() {
         </div>
 
         <div className="container py-6 pb-24">
-          <Tabs defaultValue="favorites" className="space-y-6">
+          <Tabs defaultValue="created" className="space-y-6">
             <TabsList className="bg-card border border-border/50 p-1 rounded-xl shadow-sm">
-              <TabsTrigger value="favorites" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.favorites' })}</TabsTrigger>
+              <TabsTrigger value="created" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.created', defaultMessage: 'My stones' })}</TabsTrigger>
               <TabsTrigger value="want" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.wantToVisit' })}</TabsTrigger>
               <TabsTrigger value="reviewed" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.reviewed' })}</TabsTrigger>
             </TabsList>
-            <TabsContent value="favorites" className="space-y-4">
-              {favorites.length === 0 ? (
+            <TabsContent value="created" className="space-y-4">
+              {myStones.length === 0 ? (
                 <div className="text-center py-16 space-y-4">
                   <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
                     <span className="text-2xl">💫</span>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.favorites.empty.title' })}</h3>
-                    <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.favorites.empty.description' })}</p>
+                    <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.created.empty.title', defaultMessage: 'No stones added yet' })}</h3>
+                    <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.created.empty.description', defaultMessage: 'Add your first stone to see it here.' })}</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {favorites.map((s) => (
+                  {myStones.map((s) => (
                     <Card key={s.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl">
                       <div className="p-4">
                         <h3 className="font-semibold text-foreground mb-2">{s.name}</h3>

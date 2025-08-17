@@ -56,6 +56,23 @@ class SupabaseDataProvider implements IDataProvider {
     return (data || []) as unknown as Stone[];
   }
 
+  async getStonesByCreator(authUserId: string): Promise<Stone[]> {
+    const profile = await getProfileByAuthUserId(authUserId);
+    if (!profile) return [];
+
+    const { data, error } = await supabase
+      .from('stones')
+      .select('*')
+      .eq('creator_id', profile.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('getStonesByCreator error', error);
+      return [];
+    }
+    return (data || []) as unknown as Stone[];
+  }
+
   async addStone(stoneData: NewStone, photos: File[], authUserId: string): Promise<Stone> {
     const profile = await getProfileByAuthUserId(authUserId);
     if (!profile) throw new Error('Profile not found for current user');
