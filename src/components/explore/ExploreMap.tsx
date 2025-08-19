@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
 import { O_GROVE_BOUNDS, O_GROVE_CENTER } from '@/lib/map-config';
 import { Stone } from '@/lib/data-provider/interface';
@@ -12,66 +12,67 @@ interface ExploreMapProps {
   className?: string;
 }
 
-// Component to render markers after map is ready
-const MapMarkers: React.FC<{ stones: Stone[]; onStoneSelect: (stone: Stone) => void; selectedStone: Stone | null }> = ({
+/**
+ * A simple emoji marker that scales with the map's zoom level
+ * and highlights with an outline when selected.
+ */
+const EmojiMarker = ({ zoom, isSelected }: { zoom: number, isSelected: boolean }) => {
+  // Define font size based on zoom level for scalability
+  const getFontSize = (currentZoom: number) => {
+    if (currentZoom < 13) return '14px'; // Smaller when zoomed out
+    if (currentZoom < 15) return '18px'; // Smaller default size
+    return '26px';                   // A bit larger on zoom in
+  };
+
+  const style: React.CSSProperties = {
+    fontSize: getFontSize(zoom),
+    cursor: 'pointer',
+    transition: 'filter 0.2s ease-in-out',
+    // Apply a more prominent glow/outline effect when selected
+    filter: isSelected ? 'drop-shadow(0 0 5px #ffc700)' : 'none',
+    zIndex: isSelected ? 10 : 1,
+    position: 'relative',
+  };
+
+  return <div style={style}>🪨</div>;
+};
+
+
+// Component to render markers and handle zoom-based scaling
+const MapMarkers: React.FC<{ stones: Stone[]; onStoneSelect: (stone: Stone) => void; selectedStone: Stone | null }> = ({ 
   stones,
   onStoneSelect,
-  selectedStone
+  selectedStone 
 }) => {
   const map = useMap();
+  const [zoom, setZoom] = useState(map?.getZoom() ?? O_GROVE_CENTER.zoom);
+
+  useEffect(() => {
+    if (!map) return;
+    const listener = map.addListener('zoom_changed', () => {
+      setZoom(map.getZoom()!);
+    });
+    return () => google.maps.event.removeListener(listener);
+  }, [map]);
   
-  // Only render markers when map is ready and properly initialized
-  if (!map || !map.getDiv) return null;
+  const markersData = stones.filter(stone => stone.latitude && stone.longitude);
 
-  // Filter stones that have valid coordinates
-  const markersData = stones.filter(stone => 
-    stone.latitude && stone.longitude && 
-    typeof stone.latitude === 'number' && 
-    typeof stone.longitude === 'number'
+  return (
+    <>
+      {markersData.map((stone) => {
+        const isSelected = selectedStone?.id === stone.id;
+        return (
+          <AdvancedMarker
+            key={stone.id}
+            position={{ lat: stone.latitude!, lng: stone.longitude! }}
+            onClick={() => onStoneSelect(stone)}
+          >
+            <EmojiMarker isSelected={isSelected} zoom={zoom} />
+          </AdvancedMarker>
+        );
+      })}
+    </>
   );
-
-  // Add error boundary protection for marker rendering
-  try {
-    return (
-      <>
-        {markersData.map((stone) => {
-          const isSelected = selectedStone?.id === stone.id;
-          
-          // Validate coordinates before creating marker
-          const lat = Number(stone.latitude);
-          const lng = Number(stone.longitude);
-          
-          if (isNaN(lat) || isNaN(lng)) return null;
-          
-          return (
-            <AdvancedMarker
-              key={stone.id}
-              position={{ lat, lng }}
-              onClick={() => onStoneSelect(stone)}
-              title={stone.name}
-            >
-              <div className={`bg-background text-foreground px-3 py-2 rounded-lg shadow-lg border cursor-pointer transition-all duration-200 min-w-0 max-w-48 ${
-                isSelected 
-                  ? 'border-primary scale-110 shadow-xl ring-2 ring-primary/20' 
-                  : 'border-border hover:scale-105 hover:shadow-xl'
-              }`}>
-                <div className="text-xs font-semibold truncate">{stone.name}</div>
-                {stone.average_rating > 0 && (
-                  <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                    <span>★</span>
-                    <span>{stone.average_rating.toFixed(1)}</span>
-                  </div>
-                )}
-              </div>
-            </AdvancedMarker>
-          );
-        })}
-      </>
-    );
-  } catch (error) {
-    console.warn('Error rendering map markers:', error);
-    return null;
-  }
 };
 
 const ExploreMap: React.FC<ExploreMapProps> = ({
@@ -91,7 +92,6 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
 
   const handleMapClick = useCallback(() => {
     onMapClick?.();
-    // Also trigger bottom sheet collapse if available
     if ((window as any).__collapseBottomSheet) {
       (window as any).__collapseBottomSheet();
     }
@@ -129,19 +129,14 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
             latLngBounds: O_GROVE_BOUNDS,
             strictBounds: false,
           }}
-          mapTypeControl={false}
-          streetViewControl={false}
-          fullscreenControl={false}
           onClick={handleMapClick}
         >
-          {/* Render markers after map is ready */}
           <MapMarkers 
             stones={stones}
             onStoneSelect={handleMarkerClick}
             selectedStone={activeSelectedStone}
           />
 
-          {/* Info Window for selected stone */}
           {activeSelectedStone && (
             <InfoWindow
               position={{
@@ -149,6 +144,7 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
                 lng: activeSelectedStone.longitude!,
               }}
               onCloseClick={handleInfoWindowClose}
+              options={{ pixelOffset: new google.maps.Size(0, -30) }} // Adjust InfoWindow position
             >
               <StoneInfoWindow stone={activeSelectedStone} />
             </InfoWindow>
