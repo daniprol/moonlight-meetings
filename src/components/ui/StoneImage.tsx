@@ -39,23 +39,59 @@ const iconSizes = {
 };
 
 /**
- * Default shining stone icon component
+ * Get different stone shapes based on stone ID for variety
  */
-const ShiningStoneIcon = ({ size = 'md', color }: { size: keyof typeof iconSizes; color: string }) => (
-  <svg 
-    viewBox="0 0 24 24" 
-    className={iconSizes[size]}
-    style={{ color }}
-    fill="currentColor"
-  >
-    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"/>
-    <path d="M12 2v20" stroke="white" strokeWidth="0.5" opacity="0.3"/>
-    <path d="M4 7l8 5 8-5" stroke="white" strokeWidth="0.5" opacity="0.3"/>
-    <circle cx="8" cy="6" r="1" fill="white" opacity="0.6"/>
-    <circle cx="16" cy="10" r="0.5" fill="white" opacity="0.8"/>
-    <circle cx="10" cy="15" r="0.8" fill="white" opacity="0.4"/>
-  </svg>
-);
+const getStoneShape = (id: string) => {
+  const hash = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return hash % 4; // 4 different stone shapes
+};
+
+/**
+ * Collection of realistic stone/rock SVG shapes
+ */
+const StoneShapes = {
+  0: ({ color, className }: { color: string; className: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill={color}>
+      <path d="M12 2c-2.5 0-4.8 1.2-6.2 3.1C4.2 6.8 3 9.2 3 12c0 2.8 1.2 5.2 2.8 6.9C7.2 20.8 9.5 22 12 22s4.8-1.2 6.2-3.1C19.8 17.2 21 14.8 21 12c0-2.8-1.2-5.2-2.8-6.9C16.8 3.2 14.5 2 12 2z"/>
+      <ellipse cx="8" cy="8" rx="1.5" ry="1" fill="white" opacity="0.4"/>
+      <ellipse cx="16" cy="14" rx="1" ry="0.8" fill="white" opacity="0.3"/>
+    </svg>
+  ),
+  1: ({ color, className }: { color: string; className: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill={color}>
+      <path d="M6 7c-1.1 0-2 .9-2 2v6c0 3.3 2.7 6 6 6h4c3.3 0 6-2.7 6-6V9c0-1.1-.9-2-2-2h-2L14 4h-4L8 7H6z"/>
+      <circle cx="9" cy="10" r="0.8" fill="white" opacity="0.5"/>
+      <circle cx="15" cy="16" r="1.2" fill="white" opacity="0.3"/>
+      <ellipse cx="12" cy="13" rx="0.6" ry="0.4" fill="white" opacity="0.4"/>
+    </svg>
+  ),
+  2: ({ color, className }: { color: string; className: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill={color}>
+      <path d="M12 3L4 6v4c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V6l-8-3z"/>
+      <circle cx="10" cy="9" r="1" fill="white" opacity="0.6"/>
+      <circle cx="14" cy="15" r="0.7" fill="white" opacity="0.4"/>
+      <ellipse cx="8" cy="16" rx="0.8" ry="0.5" fill="white" opacity="0.3"/>
+    </svg>
+  ),
+  3: ({ color, className }: { color: string; className: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill={color}>
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      <circle cx="7" cy="11" r="0.9" fill="white" opacity="0.5"/>
+      <circle cx="15" cy="17" r="1.1" fill="white" opacity="0.4"/>
+      <ellipse cx="11" cy="14" rx="0.7" ry="0.5" fill="white" opacity="0.6"/>
+    </svg>
+  )
+};
+
+/**
+ * Stone icon component that shows different shapes and colors
+ */
+const StoneIcon = ({ size = 'md', color, stoneId }: { size: keyof typeof iconSizes; color: string; stoneId: string }) => {
+  const shapeIndex = getStoneShape(stoneId);
+  const StoneShape = StoneShapes[shapeIndex as keyof typeof StoneShapes];
+  
+  return <StoneShape color={color} className={iconSizes[size]} />;
+};
 
 export default function StoneImage({ 
   stoneId, 
@@ -74,7 +110,7 @@ export default function StoneImage({
         className={`${sizeClasses[size]} ${className} rounded-xl flex items-center justify-center`}
         style={{ backgroundColor: `${stoneColor}20` }} // 20% opacity background
       >
-        <ShiningStoneIcon size={size} color={stoneColor} />
+        <StoneIcon size={size} color={stoneColor} stoneId={stoneId} />
       </div>
     );
   }

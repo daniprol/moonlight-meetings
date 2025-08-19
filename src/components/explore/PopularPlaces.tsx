@@ -5,9 +5,13 @@ import { Stone } from '@/lib/data-provider/interface';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import StoneImage from '@/components/ui/StoneImage';
-import { Star, MapPin, Filter, ArrowUpDown } from 'lucide-react';
+import { Star, MapPin, Filter, ArrowUpDown, Heart } from 'lucide-react';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useFavorites } from '@/hooks/queries/useFavorites';
+import { useAddFavorite } from '@/hooks/mutations/useAddFavorite';
+import { useRemoveFavorite } from '@/hooks/mutations/useRemoveFavorite';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface PopularPlacesProps {
   stones: Stone[];
@@ -27,6 +31,27 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
   const navigate = useNavigate();
   const intl = useIntl();
   const contentRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  
+  // Favorite functionality
+  const { data: favorites = [] } = useFavorites();
+  const addFavoriteMutation = useAddFavorite();
+  const removeFavoriteMutation = useRemoveFavorite();
+  
+  const isFavorite = (stoneId: string) => {
+    return favorites.some(fav => fav.id === stoneId);
+  };
+  
+  const handleFavoriteClick = (e: React.MouseEvent, stoneId: string) => {
+    e.stopPropagation(); // Prevent stone navigation
+    if (!user) return;
+    
+    if (isFavorite(stoneId)) {
+      removeFavoriteMutation.mutate(stoneId);
+    } else {
+      addFavoriteMutation.mutate(stoneId);
+    }
+  };
   
   const { height, isDragging, isScrolling, containerRef, expandToMax, collapseToMin } = useBottomSheet({
     minHeight: 40, // 40% of viewport
@@ -183,12 +208,30 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
                           {stone.name}
                         </h3>
                         
-                        {/* Rating */}
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <Star className="w-3 h-3 text-primary fill-primary" />
-                          <span className="text-xs text-foreground font-medium">
-                            {stone.average_rating?.toFixed(1) || '0.0'}
-                          </span>
+                        {/* Rating and Favorite */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-primary fill-primary" />
+                            <span className="text-xs text-foreground font-medium">
+                              {stone.average_rating?.toFixed(1) || '0.0'}
+                            </span>
+                          </div>
+                          {user && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0 hover:bg-background/80"
+                              onClick={(e) => handleFavoriteClick(e, stone.id)}
+                            >
+                              <Heart 
+                                className={`w-3 h-3 transition-colors ${
+                                  isFavorite(stone.id) 
+                                    ? 'text-red-500 fill-red-500' 
+                                    : 'text-muted-foreground hover:text-red-400'
+                                }`}
+                              />
+                            </Button>
+                          )}
                         </div>
                       </div>
 

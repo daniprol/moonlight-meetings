@@ -45,7 +45,7 @@ const MapMarkers: React.FC<{ stones: Stone[]; onStoneSelect: (stone: Stone) => v
   selectedStone 
 }) => {
   const map = useMap();
-  const [zoom, setZoom] = useState(map?.getZoom() ?? O_GROVE_CENTER.zoom);
+  const [zoom, setZoom] = useState(map?.getZoom() ?? 13);
 
   useEffect(() => {
     if (!map) return;
@@ -144,7 +144,7 @@ const ExploreMap: React.FC<ExploreMapProps> = ({
                 lng: activeSelectedStone.longitude!,
               }}
               onCloseClick={handleInfoWindowClose}
-              options={{ pixelOffset: new google.maps.Size(0, -30) }} // Adjust InfoWindow position
+              pixelOffset={[0, -30]}
             >
               <StoneInfoWindow stone={activeSelectedStone} />
             </InfoWindow>

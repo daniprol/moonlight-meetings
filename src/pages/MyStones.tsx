@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import { useMyStones } from '@/hooks/queries/useMyStones';
+import { useFavorites } from '@/hooks/queries/useFavorites';
+import { useRemoveFavorite } from '@/hooks/mutations/useRemoveFavorite';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { StarField } from '@/components/StarField';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useIntl } from 'react-intl';
@@ -9,11 +12,19 @@ import { useNavigate } from 'react-router-dom';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 import StoneImage from '@/components/ui/StoneImage';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Heart } from 'lucide-react';
 
 export default function MyStones() {
   const intl = useIntl();
   const navigate = useNavigate();
   const { data: myStones = [], isLoading } = useMyStones();
+  const { data: favorites = [], isLoading: favoritesLoading } = useFavorites();
+  const removeFavoriteMutation = useRemoveFavorite();
+  
+  const handleRemoveFavorite = (e: React.MouseEvent, stoneId: string) => {
+    e.stopPropagation();
+    removeFavoriteMutation.mutate(stoneId);
+  };
 
   useEffect(() => {
     document.title = `${intl.formatMessage({ id: 'page.myCollection' })} | ${intl.formatMessage({ id: 'title' })}`;
@@ -98,16 +109,64 @@ export default function MyStones() {
                 </div>
               )}
             </TabsContent>
-            <TabsContent value="want" className="py-16 text-center">
-              <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
-                  <span className="text-2xl">🌙</span>
+            <TabsContent value="want" className="space-y-4">
+              {favoritesLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Card key={i} className="p-4">
+                      <div className="flex gap-3">
+                        <Skeleton className="w-24 h-24 rounded-lg" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-5/6" />
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
                 </div>
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.wantToVisit.title' })}</h3>
-                  <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.wantToVisit.description' })}</p>
+              ) : favorites.length === 0 ? (
+                <div className="text-center py-16 space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
+                    <Heart className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-foreground">{intl.formatMessage({ id: 'my.wantToVisit.empty.title', defaultMessage: 'No favorite stones yet' })}</h3>
+                    <p className="text-muted-foreground">{intl.formatMessage({ id: 'my.wantToVisit.empty.description', defaultMessage: 'Mark stones as favorites from the explore section to see them here.' })}</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-3">
+                  {favorites.map((stone) => (
+                    <Card key={stone.id} className="bg-card border-border/50 hover:shadow-md transition-all duration-300 rounded-2xl cursor-pointer" onClick={() => navigate(`/stone/${stone.id}`)}>
+                      <div className="p-4">
+                        <div className="flex gap-3">
+                          <StoneImage 
+                            stoneId={stone.id} 
+                            stoneName={stone.name} 
+                            thumbnailPath={stone.thumbnail_path}
+                            size="md"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <h3 className="font-semibold text-foreground">{stone.name}</h3>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-destructive/10"
+                                onClick={(e) => handleRemoveFavorite(e, stone.id)}
+                              >
+                                <Heart className="w-4 h-4 text-red-500 fill-red-500 hover:text-red-600" />
+                              </Button>
+                            </div>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{stone.address_text || stone.description}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="reviewed" className="py-16 text-center">
               <div className="space-y-4">
