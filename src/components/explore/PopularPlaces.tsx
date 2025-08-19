@@ -7,19 +7,22 @@ import { Button } from '@/components/ui/button';
 import StoneImage from '@/components/ui/StoneImage';
 import { Star, MapPin, Filter, ArrowUpDown } from 'lucide-react';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PopularPlacesProps {
   stones: Stone[];
   selectedStone?: Stone | null;
   onStoneHover?: (stone: Stone | null) => void;
   onMapClick?: () => void;
+  isLoading?: boolean;
 }
 
 const PopularPlaces: React.FC<PopularPlacesProps> = ({ 
   stones, 
   selectedStone, 
   onStoneHover,
-  onMapClick
+  onMapClick,
+  isLoading
 }) => {
   const navigate = useNavigate();
   const intl = useIntl();
@@ -135,61 +138,75 @@ const PopularPlaces: React.FC<PopularPlacesProps> = ({
         }}
       >
         <div className="space-y-3 py-2">
-          {stones.map((stone) => (
-            <Card
-              key={stone.id}
-              className={`group cursor-pointer transition-all duration-200 border-border/50 rounded-2xl overflow-hidden backdrop-blur-sm ${
-                selectedStone?.id === stone.id 
-                  ? 'ring-2 ring-primary shadow-lg bg-primary/10 border-primary/30' 
-                  : 'hover:shadow-lg hover:bg-card/80 hover:border-border'
-              }`}
-              onClick={() => handleStoneClick(stone)}
-              onMouseEnter={() => onStoneHover?.(stone)}
-              onMouseLeave={() => onStoneHover?.(null)}
-            >
-              <div className="p-3">
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <Card key={i} className="p-3">
                 <div className="flex items-center gap-3">
-                  {/* Stone Image */}
-                  <div className="flex-shrink-0">
-                    <StoneImage
-                      stoneId={stone.id}
-                      stoneName={stone.name}
-                      thumbnailPath={stone.thumbnail_path}
-                      size="sm"
-                      className="group-hover:scale-105 transition-transform duration-200 rounded-xl"
-                    />
-                  </div>
-
-                  {/* Stone Info - Horizontal Layout */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground line-clamp-1 text-sm">
-                        {stone.name}
-                      </h3>
-                      
-                      {/* Rating */}
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Star className="w-3 h-3 text-primary fill-primary" />
-                        <span className="text-xs text-foreground font-medium">
-                          {stone.average_rating?.toFixed(1) || '0.0'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Location */}
-                    {stone.address_text && (
-                      <div className="flex items-start gap-1">
-                        <MapPin className="w-3 h-3 text-muted-foreground mt-0.5 flex-shrink-0" />
-                        <span className="text-xs text-muted-foreground line-clamp-1">
-                          {stone.address_text}
-                        </span>
-                      </div>
-                    )}
+                  <Skeleton className="w-16 h-16 rounded-xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            ))
+          ) : (
+            stones.map((stone) => (
+              <Card
+                key={stone.id}
+                className={`group cursor-pointer transition-all duration-200 border-border/50 rounded-2xl overflow-hidden backdrop-blur-sm ${
+                  selectedStone?.id === stone.id 
+                    ? 'ring-2 ring-primary shadow-lg bg-primary/10 border-primary/30' 
+                    : 'hover:shadow-lg hover:bg-card/80 hover:border-border'
+                }`}
+                onClick={() => handleStoneClick(stone)}
+                onMouseEnter={() => onStoneHover?.(stone)}
+                onMouseLeave={() => onStoneHover?.(null)}
+              >
+                <div className="p-3">
+                  <div className="flex items-center gap-3">
+                    {/* Stone Image */}
+                    <div className="flex-shrink-0">
+                      <StoneImage
+                        stoneId={stone.id}
+                        stoneName={stone.name}
+                        thumbnailPath={stone.thumbnail_path}
+                        size="sm"
+                        className="group-hover:scale-105 transition-transform duration-200 rounded-xl"
+                      />
+                    </div>
+
+                    {/* Stone Info - Horizontal Layout */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-semibold text-foreground line-clamp-1 text-sm">
+                          {stone.name}
+                        </h3>
+                        
+                        {/* Rating */}
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <Star className="w-3 h-3 text-primary fill-primary" />
+                          <span className="text-xs text-foreground font-medium">
+                            {stone.average_rating?.toFixed(1) || '0.0'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Location */}
+                      {stone.address_text && (
+                        <div className="flex items-start gap-1">
+                          <MapPin className="w-3 h-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                          <span className="text-xs text-muted-foreground line-clamp-1">
+                            {stone.address_text}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </div>

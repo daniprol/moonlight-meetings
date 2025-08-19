@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { dataProvider } from '@/lib/data-provider/supabase-provider';
 import { StarField } from '@/components/StarField';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useIntl } from 'react-intl';
@@ -24,7 +23,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { NavigationGuard } from '@/components/forms/NavigationGuard';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
-import { useCoordinateSync } from '@/hooks/useCoordinateSync'; // NEW: Import the custom hook
+import { useCoordinateSync } from '@/hooks/useCoordinateSync';
+import { useAddStone } from '@/hooks/mutations/useAddStone';
 
 // Form validation schema (no changes here)
 const createFormSchema = (intl: any) => z.object({
@@ -58,7 +58,7 @@ export default function AddStone() {
   const intl = useIntl();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const addStoneMutation = useAddStone();
 
   const formSchema = createFormSchema(intl);
 
@@ -74,10 +74,7 @@ export default function AddStone() {
     mode: 'onChange',
   });
 
-  // NEW: The hook now provides the map's camera state and a handler for when it changes.
   const { mapCenter, mapZoom, handleCameraChange, isPending } = useCoordinateSync(form);
-
-  // REMOVED: mapMarkers array is no longer needed.
 
   const isFormDirty = form.formState.isDirty && step > 1;
 
@@ -93,18 +90,17 @@ export default function AddStone() {
       return;
     }
 
-    setIsSubmitting(true);
-    try {
-      const photos = values.photos ? Array.from(values.photos) : [];
-      await dataProvider.addStone({ name: values.name, description: values.description || '', address_text: values.address || '', latitude: values.latitude, longitude: values.longitude }, photos, user.id);
-      toast({ title: intl.formatMessage({ id: 'form.status.success' }), description: intl.formatMessage({ id: 'form.status.successMessage' }) });
-      form.reset();
-      setStep(1);
-    } catch (error) {
-      toast({ title: intl.formatMessage({ id: 'form.status.error' }), description: intl.formatMessage({ id: 'form.status.errorMessage' }), variant: "destructive" });
-    } finally {
-      setIsSubmitting(false);
-    }
+    const photos = values.photos ? Array.from(values.photos) : [];
+    addStoneMutation.mutate({ stoneData: { name: values.name, description: values.description || '', address_text: values.address || '', latitude: values.latitude, longitude: values.longitude }, photos }, {
+      onSuccess: () => {
+        toast({ title: intl.formatMessage({ id: 'form.status.success' }), description: intl.formatMessage({ id: 'form.status.successMessage' }) });
+        form.reset();
+        setStep(1);
+      },
+      onError: () => {
+        toast({ title: intl.formatMessage({ id: 'form.status.error' }), description: intl.formatMessage({ id: 'form.status.errorMessage' }), variant: "destructive" });
+      }
+    });
   };
 
   const validateStep = async (targetStep: number) => {
@@ -239,7 +235,7 @@ export default function AddStone() {
                   )} />
                   <div className="flex gap-3">
                     <Button type="button" variant="outline" onClick={goToPrevStep} className="h-12 flex-1">{intl.formatMessage({ id: 'addStone.back' })}</Button>
-                    <Button type="submit" disabled={isSubmitting} className="h-12 flex-1">{isSubmitting ? intl.formatMessage({ id: 'form.status.creating' }) : intl.formatMessage({ id: 'addStone.createPlace' })}</Button>
+                    <Button type="submit" disabled={addStoneMutation.isPending} className="h-12 flex-1">{addStoneMutation.isPending ? intl.formatMessage({ id: 'form.status.creating' }) : intl.formatMessage({ id: 'addStone.createPlace' })}</Button>
                   </div>
                 </div>
               )}

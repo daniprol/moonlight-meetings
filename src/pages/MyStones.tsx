@@ -1,28 +1,23 @@
-import { useEffect, useState } from 'react';
-import { dataProvider } from '@/lib/data-provider/supabase-provider';
-import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
+import { useMyStones } from '@/hooks/queries/useMyStones';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
 import StoneImage from '@/components/ui/StoneImage';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MyStones() {
-  const { user } = useAuth();
   const intl = useIntl();
   const navigate = useNavigate();
-  const [myStones, setMyStones] = useState<any[]>([]);
+  const { data: myStones = [], isLoading } = useMyStones();
 
   useEffect(() => {
     document.title = `${intl.formatMessage({ id: 'page.myCollection' })} | ${intl.formatMessage({ id: 'title' })}`;
   }, [intl]);
-
-  useEffect(() => {
-    if (user) dataProvider.getStonesByCreator(user.id).then(setMyStones);
-  }, [user]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,7 +50,22 @@ export default function MyStones() {
               <TabsTrigger value="reviewed" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-lg">{intl.formatMessage({ id: 'my.tabs.reviewed' })}</TabsTrigger>
             </TabsList>
             <TabsContent value="created" className="space-y-4">
-              {myStones.length === 0 ? (
+              {isLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Card key={i} className="p-4">
+                      <div className="flex gap-3">
+                        <Skeleton className="w-24 h-24 rounded-lg" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-5/6" />
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : myStones.length === 0 ? (
                 <div className="text-center py-16 space-y-4">
                   <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center">
                     <span className="text-2xl">💫</span>

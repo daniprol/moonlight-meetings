@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { dataProvider } from '@/lib/data-provider/supabase-provider';
 import { useAuth } from '@/contexts/AuthContext';
-import { Stone, Review } from '@/lib/data-provider/interface';
+import { Review } from '@/lib/data-provider/interface';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +14,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useIntl } from 'react-intl';
 import { ArrowLeft, Star, MapPin, Calendar, Camera, MessageCircle, Heart } from 'lucide-react';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
+import { useStone } from '@/hooks/queries/useStone';
+import { useReviews } from '@/hooks/queries/useReviews';
+import { useAddReview } from '@/hooks/mutations/useAddReview';
+import { useAddFavorite } from '@/hooks/mutations/useAddFavorite';
+import { useRemoveFavorite } from '@/hooks/mutations/useRemoveFavorite';
+import { useFavorites } from '@/hooks/queries/useFavorites';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function StonePage() {
   const { id } = useParams<{ id: string }>();
@@ -22,19 +28,18 @@ export default function StonePage() {
   const { user } = useAuth();
   const intl = useIntl();
   const { toast } = useToast();
-  
-  const [stone, setStone] = useState<Stone | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
-  const [submittingReview, setSubmittingReview] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-    loadStone();
-  }, [id]);
+  const { data: stone, isLoading: isLoadingStone, isError } = useStone(id!);
+  const { data: reviews = [], isLoading: isLoadingReviews } = useReviews(id!);
+  const { data: favorites = [] } = useFavorites();
+
+  const addReviewMutation = useAddReview();
+  const addFavoriteMutation = useAddFavorite();
+  const removeFavoriteMutation = useRemoveFavorite();
+
+  const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+
+  const isFavorite = favorites.some(fav => fav.id === id);
 
   useEffect(() => {
     if (stone) {
@@ -42,95 +47,39 @@ export default function StonePage() {
     }
   }, [stone, intl]);
 
-  const loadStone = async () => {
-    if (!id) return;
-    try {
-      setLoading(true);
-      const [stoneData, reviewsData] = await Promise.all([
-        dataProvider.getStoneById(id),
-        dataProvider.getReviewsForStone(id)
-      ]);
-      
-      if (!stoneData) {
-        // Navigate to 404 page instead of showing toast
-        navigate('/404', { replace: true });
-        return;
-      }
-      
-      setStone(stoneData);
-      setReviews(reviewsData);
-      
-      // Check if favorited (when we have favorites functionality)
-      if (user) {
-        try {
-          const favorites = await dataProvider.getFavoriteStones(user.id);
-          setIsFavorite(favorites.some(fav => fav.id === id));
-        } catch (err) {
-          console.log('Could not load favorites');
-        }
-      }
-    } catch (error) {
-      console.error('Error loading stone:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load stone details",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (isError) {
+    navigate('/404', { replace: true });
+    return null;
+  }
 
   const handleFavoriteToggle = async () => {
     if (!user || !stone) return;
-    
-    try {
-      if (isFavorite) {
-        await dataProvider.removeFavorite(user.id, stone.id);
-        setIsFavorite(false);
-        toast({ title: "Removed from favorites" });
-      } else {
-        await dataProvider.addFavorite(user.id, stone.id);
-        setIsFavorite(true);
-        toast({ title: "Added to favorites" });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update favorites",
-        variant: "destructive"
+
+    if (isFavorite) {
+      removeFavoriteMutation.mutate(stone.id, {
+        onSuccess: () => toast({ title: "Removed from favorites" }),
+        onError: () => toast({ title: "Error", description: "Failed to update favorites", variant: "destructive" }),
+      });
+    } else {
+      addFavoriteMutation.mutate(stone.id, {
+        onSuccess: () => toast({ title: "Added to favorites" }),
+        onError: () => toast({ title: "Error", description: "Failed to update favorites", variant: "destructive" }),
       });
     }
   };
 
   const handleReviewSubmit = async () => {
     if (!user || !stone || !newReview.comment.trim()) return;
-    
-    try {
-      setSubmittingReview(true);
-      const review = await dataProvider.addReview({
-        stone_id: stone.id,
-        rating: newReview.rating,
-        comment: newReview.comment
-      }, user.id);
-      
-      setReviews(prev => [review, ...prev]);
-      setNewReview({ rating: 5, comment: '' });
-      
-      // Reload stone to get updated average rating
-      const updatedStone = await dataProvider.getStoneById(stone.id);
-      if (updatedStone) setStone(updatedStone);
-      
-      toast({ title: "Review added successfully" });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add review",
-        variant: "destructive"
-      });
-    } finally {
-      setSubmittingReview(false);
-    }
+
+    addReviewMutation.mutate({ stone_id: stone.id, rating: newReview.rating, comment: newReview.comment }, {
+      onSuccess: () => {
+        setNewReview({ rating: 5, comment: '' });
+        toast({ title: "Review added successfully" });
+      },
+      onError: () => {
+        toast({ title: "Error", description: "Failed to add review", variant: "destructive" });
+      }
+    });
   };
 
   const renderStars = (rating: number, interactive = false, onRatingChange?: (rating: number) => void) => {
@@ -157,10 +106,15 @@ export default function StonePage() {
     );
   };
 
-  if (loading) {
+  if (isLoadingStone) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-background">
+        <div className="container py-6 space-y-6 pb-24">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-8 w-1/2" />
+            <Skeleton className="h-24 w-full" />
+        </div>
       </div>
     );
   }
@@ -211,6 +165,7 @@ export default function StonePage() {
                   size="sm"
                   onClick={handleFavoriteToggle}
                   className="ml-auto p-2 h-auto"
+                  disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
                 >
                   <Heart className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
                 </Button>
@@ -223,23 +178,10 @@ export default function StonePage() {
           {/* Photos Section */}
           <Card className="bg-card border-border/50 rounded-2xl overflow-hidden">
             <div className="aspect-[4/3] bg-muted flex items-center justify-center relative">
-              {photos.length > 0 ? (
-                <img 
-                  src={photos[0]} 
-                  alt={stone.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
                 <div className="flex flex-col items-center gap-3 text-muted-foreground">
                   <Camera className="h-12 w-12" />
                   <p className="text-sm">No photos available</p>
                 </div>
-              )}
-              {photos.length > 1 && (
-                <Badge variant="secondary" className="absolute bottom-3 right-3">
-                  +{photos.length - 1} more
-                </Badge>
-              )}
             </div>
           </Card>
 
@@ -325,17 +267,26 @@ export default function StonePage() {
                   
                   <Button
                     onClick={handleReviewSubmit}
-                    disabled={!newReview.comment.trim() || submittingReview}
+                    disabled={!newReview.comment.trim() || addReviewMutation.isPending}
                     className="w-full"
                   >
-                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                    {addReviewMutation.isPending ? 'Submitting...' : 'Submit Review'}
                   </Button>
                 </CardContent>
               </Card>
             )}
 
             {/* Reviews List */}
-            {reviews.length === 0 ? (
+            {isLoadingReviews ? (
+                <div className="space-y-3">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                        <Card key={i} className="p-4 space-y-3">
+                            <Skeleton className="h-4 w-1/4" />
+                            <Skeleton className="h-12 w-full" />
+                        </Card>
+                    ))}
+                </div>
+            ) : reviews.length === 0 ? (
               <Card className="bg-card border-border/50 rounded-2xl">
                 <CardContent className="p-8 text-center">
                   <div className="space-y-3">

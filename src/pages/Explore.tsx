@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { dataProvider } from '@/lib/data-provider/supabase-provider';
 import { useIntl } from 'react-intl';
 import { Stone } from '@/lib/data-provider/interface';
 import { StarField } from '@/components/StarField';
@@ -7,10 +6,11 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import ExploreMap from '@/components/explore/ExploreMap';
 import PopularPlaces from '@/components/explore/PopularPlaces';
 import starryBackground from '@/assets/starry-sky-pattern.jpg';
+import { useTopRatedStones } from '@/hooks/queries/useTopRatedStones';
 
 export default function Explore() {
   const intl = useIntl();
-  const [topRated, setTopRated] = useState<Stone[]>([]);
+  const { data: topRated = [], isLoading } = useTopRatedStones(20);
   const [selectedStone, setSelectedStone] = useState<Stone | null>(null);
   const [hoveredStone, setHoveredStone] = useState<Stone | null>(null);
 
@@ -21,10 +21,6 @@ export default function Explore() {
     meta.setAttribute('content', intl.formatMessage({ id: 'description' }));
     document.head.appendChild(meta);
   }, [intl]);
-
-  useEffect(() => {
-    dataProvider.getTopRatedStones(20).then(setTopRated);
-  }, []);
 
   const handleStoneSelect = (stone: Stone | null) => {
     setSelectedStone(stone);
@@ -84,6 +80,7 @@ export default function Explore() {
             selectedStone={currentSelectedStone}
             onStoneHover={handleStoneHover}
             onMapClick={handleMapClick}
+            isLoading={isLoading}
           />
       </main>
     </div>
